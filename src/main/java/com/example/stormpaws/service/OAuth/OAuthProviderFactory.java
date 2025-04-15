@@ -1,4 +1,4 @@
-package com.example.stormpaws.service.OAuth;
+package com.example.stormpaws.service.oauth;
 
 import java.util.List;
 import java.util.Map;

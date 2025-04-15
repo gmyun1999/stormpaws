@@ -1,7 +1,7 @@
-package com.example.stormpaws.infra.security;
+package com.example.stormpaws.infra;
 
 import com.example.stormpaws.domain.model.UserModel;
-import com.example.stormpaws.service.ITokenProvider;
+import com.example.stormpaws.service.token.ITokenProvider;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;

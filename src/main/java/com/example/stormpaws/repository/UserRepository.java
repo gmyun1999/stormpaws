@@ -8,4 +8,8 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface UserRepository extends JpaRepository<UserModel, String> {
   Optional<UserModel> findByOauthTypeAndOauthId(String oauthType, String oauthId);
+
+  Optional<UserModel> findByEmail(String email);
+
+  Optional<UserModel> findById(String id);
 }

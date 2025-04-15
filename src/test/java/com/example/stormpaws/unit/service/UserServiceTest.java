@@ -6,12 +6,12 @@ import static org.mockito.Mockito.*;
 
 import com.example.stormpaws.domain.model.UserModel;
 import com.example.stormpaws.repository.UserRepository;
-import com.example.stormpaws.service.AuthService;
-import com.example.stormpaws.service.ITokenProvider;
-import com.example.stormpaws.service.OAuth.IOAuthProvider;
-import com.example.stormpaws.service.OAuth.OAuthProviderFactory;
-import com.example.stormpaws.service.dto.AuthDataDto;
-import com.example.stormpaws.service.dto.OAuthUser;
+import com.example.stormpaws.service.UserService;
+import com.example.stormpaws.service.dto.AuthDataDTO;
+import com.example.stormpaws.service.dto.OAuthUserDTO;
+import com.example.stormpaws.service.oauth.IOAuthProvider;
+import com.example.stormpaws.service.oauth.OAuthProviderFactory;
+import com.example.stormpaws.service.token.ITokenProvider;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -22,7 +22,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
-class AuthServiceTest {
+class UserServiceTest {
 
   @Mock private OAuthProviderFactory oauthProviderFactory;
 
@@ -32,14 +32,14 @@ class AuthServiceTest {
 
   @Mock private IOAuthProvider oauthProvider;
 
-  @InjectMocks private AuthService authService;
+  @InjectMocks private UserService authService;
 
   private final String authServer = "google";
   private final String code = "sample-code";
   private final String providerAccessToken = "provider-access-token";
 
-  private OAuthUser createSampleOAuthUser(String id, String name, String email) {
-    OAuthUser oauthUser = new OAuthUser();
+  private OAuthUserDTO createSampleOAuthUser(String id, String name, String email) {
+    OAuthUserDTO oauthUser = new OAuthUserDTO();
     oauthUser.setId(id);
     oauthUser.setName(name);
     oauthUser.setEmail(email);
@@ -58,7 +58,7 @@ class AuthServiceTest {
   void testLogin_existingUser() {
     // 기존 사용자 케이스
     String oauthUserId = "existing-oauth-id";
-    OAuthUser oauthUser = createSampleOAuthUser(oauthUserId, "John Doe", "john@example.com");
+    OAuthUserDTO oauthUser = createSampleOAuthUser(oauthUserId, "John Doe", "john@example.com");
     when(oauthProvider.getOAuthUser(providerAccessToken)).thenReturn(oauthUser);
     when(oauthProvider.getProviderName()).thenReturn("GOOGLE");
 
@@ -80,7 +80,7 @@ class AuthServiceTest {
     when(tokenProvider.createRefreshToken(existingUser)).thenReturn("refresh-token");
 
     // Act
-    AuthDataDto authData = authService.login(authServer, code);
+    AuthDataDTO authData = authService.login(authServer, code);
 
     // Assert
     assertNotNull(authData);
@@ -95,7 +95,7 @@ class AuthServiceTest {
   void testLogin_newUser() {
     // 신규 사용자 케이스
     String oauthUserId = "new-oauth-id";
-    OAuthUser oauthUser = createSampleOAuthUser(oauthUserId, "Jane Doe", "jane@example.com");
+    OAuthUserDTO oauthUser = createSampleOAuthUser(oauthUserId, "Jane Doe", "jane@example.com");
     when(oauthProvider.getOAuthUser(providerAccessToken)).thenReturn(oauthUser);
     when(oauthProvider.getProviderName()).thenReturn("GOOGLE");
 
@@ -108,7 +108,7 @@ class AuthServiceTest {
     when(tokenProvider.createRefreshToken(any(UserModel.class))).thenReturn("new-refresh-token");
 
     // Act
-    AuthDataDto authData = authService.login(authServer, code);
+    AuthDataDTO authData = authService.login(authServer, code);
 
     // Assert
     assertNotNull(authData);

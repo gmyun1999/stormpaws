@@ -1,4 +1,4 @@
-package com.example.stormpaws.service;
+package com.example.stormpaws.service.token;
 
 import com.example.stormpaws.domain.model.UserModel;
 import io.jsonwebtoken.Claims;

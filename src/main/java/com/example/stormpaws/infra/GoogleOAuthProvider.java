@@ -1,7 +1,7 @@
-package com.example.stormpaws.infra.security;
+package com.example.stormpaws.infra;
 
-import com.example.stormpaws.service.OAuth.IOAuthProvider;
-import com.example.stormpaws.service.dto.OAuthUser;
+import com.example.stormpaws.service.dto.OAuthUserDTO;
+import com.example.stormpaws.service.oauth.IOAuthProvider;
 import java.util.Map;
 import java.util.Objects;
 import org.springframework.beans.factory.annotation.Value;
@@ -60,7 +60,7 @@ public class GoogleOAuthProvider implements IOAuthProvider {
   }
 
   @Override
-  public OAuthUser getOAuthUser(String accessToken) {
+  public OAuthUserDTO getOAuthUser(String accessToken) {
     String url = "https://www.googleapis.com/oauth2/v2/userinfo";
 
     HttpHeaders headers = new HttpHeaders();
@@ -74,7 +74,7 @@ public class GoogleOAuthProvider implements IOAuthProvider {
     Map<String, Object> body =
         Objects.requireNonNull(response.getBody(), "Failed to retrieve user information");
 
-    OAuthUser user = new OAuthUser();
+    OAuthUserDTO user = new OAuthUserDTO();
     user.setId((String) body.get("id"));
     user.setName((String) body.get("name"));
     user.setEmail((String) body.get("email"));

@@ -1,11 +1,11 @@
-package com.example.stormpaws.service.OAuth;
+package com.example.stormpaws.service.oauth;
 
-import com.example.stormpaws.service.dto.OAuthUser;
+import com.example.stormpaws.service.dto.OAuthUserDTO;
 
 public interface IOAuthProvider {
   String getProviderName();
 
   String getOAuthToken(String code);
 
-  OAuthUser getOAuthUser(String accessToken);
+  OAuthUserDTO getOAuthUser(String accessToken);
 }

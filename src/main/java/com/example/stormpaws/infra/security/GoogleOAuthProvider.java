@@ -1,4 +1,4 @@
-package com.example.stormpaws.infra.external.OAuth;
+package com.example.stormpaws.infra.security;
 
 import com.example.stormpaws.service.OAuth.IOAuthProvider;
 import com.example.stormpaws.service.dto.OAuthUser;

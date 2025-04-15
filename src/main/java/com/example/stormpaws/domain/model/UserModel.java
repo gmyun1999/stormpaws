@@ -1,21 +1,15 @@
 package com.example.stormpaws.domain.model;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Index;
-import jakarta.persistence.Table;
-import jakarta.persistence.UniqueConstraint;
+import jakarta.persistence.*;
 import java.time.LocalDateTime;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
-@Data
-@NoArgsConstructor
+@Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
+@Builder
 @Entity
 @Table(
     name = "UserModel",
@@ -31,13 +25,13 @@ public class UserModel {
   @Column(length = 36)
   private String id;
 
-  @Column(length = 64, nullable = true)
+  @Column(length = 64)
   private String name;
 
-  @Column(length = 64, nullable = true)
+  @Column(length = 64)
   private String email;
 
-  @Column(name = "mobile_no", length = 16, nullable = true)
+  @Column(name = "mobile_no", length = 16)
   private String mobileNo;
 
   @Column(name = "oauth_type", length = 16, nullable = false)

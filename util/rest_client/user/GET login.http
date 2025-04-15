@@ -1,0 +1,6 @@
+GET {{stormpaw-host}}/user/login/google
+Content-Type: application/json
+Authorization: Bearer {{stormpaw-jwt}}
+{
+    "code": "123123"
+}

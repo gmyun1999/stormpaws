@@ -15,15 +15,15 @@ public class AuthService {
 
   private final OAuthProviderFactory oauthProviderFactory;
   private final UserRepository userRepository;
-  private final TokenService tokenService;
+  private final ITokenProvider tokenProvider;
 
   public AuthService(
       OAuthProviderFactory oauthProviderFactory,
       UserRepository userRepository,
-      TokenService tokenService) {
+      ITokenProvider tokenProvider) {
     this.oauthProviderFactory = oauthProviderFactory;
     this.userRepository = userRepository;
-    this.tokenService = tokenService;
+    this.tokenProvider = tokenProvider;
   }
 
   public AuthDataDto login(String authServer, String code) {
@@ -35,23 +35,25 @@ public class AuthService {
     Optional<UserModel> optionalUser =
         userRepository.findByOauthTypeAndOauthId(provider.getProviderName(), oauthUser.getId());
     UserModel user;
+
     if (optionalUser.isPresent()) {
       user = optionalUser.get();
     } else {
-      // 신규 사용자 생성
-      user = new UserModel();
-      user.setId(UUID.randomUUID().toString());
-      user.setName(oauthUser.getName());
-      user.setEmail(oauthUser.getEmail());
-      user.setOauthType(provider.getProviderName());
-      user.setOauthId(oauthUser.getId());
-      user.setTosAgreed(true);
-      user = userRepository.save(user);
+      user =
+          UserModel.builder()
+              .id(UUID.randomUUID().toString())
+              .name(oauthUser.getName())
+              .email(oauthUser.getEmail())
+              .oauthType(provider.getProviderName())
+              .oauthId(oauthUser.getId())
+              .tosAgreed(true)
+              .build();
+      userRepository.save(user);
     }
 
     // JWT 토큰 발급
-    String accessToken = tokenService.generateAccessToken(user);
-    String refreshToken = tokenService.generateRefreshToken(user);
+    String accessToken = tokenProvider.createAccessToken(user);
+    String refreshToken = tokenProvider.createRefreshToken(user);
 
     return new AuthDataDto(accessToken, refreshToken);
   }

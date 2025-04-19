@@ -3,8 +3,6 @@ package com.example.stormpaws.web.controller;
 import com.example.stormpaws.service.UserService;
 import com.example.stormpaws.service.dto.AuthDataDTO;
 import com.example.stormpaws.web.dto.ApiResponse;
-import com.example.stormpaws.web.dto.OAuthCodeRequest;
-import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,12 +16,11 @@ public class UserController {
     this.authService = authService;
   }
 
-  // POST /user/login/{authServer} : OAuth를 통한 로그인 처리
-  @PostMapping("/login/{authServer}")
+  @GetMapping("/login/{authServer}")
   public ResponseEntity<ApiResponse<AuthDataDTO>> login(
-      @PathVariable String authServer, @Valid @RequestBody OAuthCodeRequest authCodeRequest) {
-    AuthDataDTO authData = authService.login(authServer, authCodeRequest.getCode());
-    ApiResponse<AuthDataDTO> response = new ApiResponse<>(true, "Login successful", authData);
+      @PathVariable String authServer, @RequestParam String code) {
+    AuthDataDTO authData = authService.login(authServer, code);
+    ApiResponse<AuthDataDTO> response = new ApiResponse<>(true, "Login Success", authData);
     return ResponseEntity.ok(response);
   }
 

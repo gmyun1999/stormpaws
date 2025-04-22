@@ -2,10 +2,10 @@ package com.example.stormpaws.service;
 
 import com.example.stormpaws.domain.model.UserModel;
 import com.example.stormpaws.repository.UserRepository;
-import com.example.stormpaws.service.dto.AuthDataDTO;
-import com.example.stormpaws.service.dto.OAuthUserDTO;
 import com.example.stormpaws.service.OAuth.IOAuthProvider;
 import com.example.stormpaws.service.OAuth.OAuthProviderFactory;
+import com.example.stormpaws.service.dto.AuthDataDTO;
+import com.example.stormpaws.service.dto.OAuthUserDTO;
 import com.example.stormpaws.service.token.ITokenProvider;
 import java.util.Optional;
 import java.util.UUID;

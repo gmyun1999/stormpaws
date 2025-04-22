@@ -1,8 +1,8 @@
 package com.example.stormpaws.infra;
 
+import com.example.stormpaws.service.OAuth.IOAuthProvider;
 import com.example.stormpaws.service.dto.OAuthUserDTO;
 import com.example.stormpaws.service.exception.OAuthException;
-import com.example.stormpaws.service.OAuth.IOAuthProvider;
 import java.util.Map;
 import java.util.Objects;
 import org.springframework.beans.factory.annotation.Value;

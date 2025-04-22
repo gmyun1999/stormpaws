@@ -27,6 +27,13 @@ public class UserService {
     this.tokenProvider = tokenProvider;
   }
 
+  /**
+   * @param authServer OAuth 제공자 이름 (예: "google", "kakao")
+   * @param code OAuth 인증 코드 (인가 코드)
+   * @return accessToken과 refreshToken이 포함된 AuthDataDTO
+   * @throws com.example.stormpaws.service.oauth.OAuthException - 인증 서버로부터 토큰 발급 실패 시 - 사용자 정보 조회 실패
+   *     시
+   */
   public AuthDataDTO login(String authServer, String code) {
     IOAuthProvider provider = oauthProviderFactory.getProvider(authServer);
     String providerAccessToken = provider.getOAuthToken(code);

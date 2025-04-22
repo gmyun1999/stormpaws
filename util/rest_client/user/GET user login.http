@@ -1,6 +1,2 @@
-POST {{stormpaw-host}}/user/login/google
+GET {{stormpaw-host}}/user/login/google?code=123
 Content-Type: application/json
-Authorization: Bearer {{stormpaw-jwt}}
-{
-    "code": "123123"
-}

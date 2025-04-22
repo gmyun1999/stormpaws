@@ -1,4 +1,4 @@
-package com.example.stormpaws.service.oauth;
+package com.example.stormpaws.service.OAuth;
 
 import com.example.stormpaws.service.dto.OAuthUserDTO;
 

@@ -1,6 +1,7 @@
 package com.example.stormpaws.infra;
 
 import com.example.stormpaws.service.dto.OAuthUserDTO;
+import com.example.stormpaws.service.exception.OAuthException;
 import com.example.stormpaws.service.oauth.IOAuthProvider;
 import java.util.Map;
 import java.util.Objects;
@@ -46,17 +47,19 @@ public class GoogleOAuthProvider implements IOAuthProvider {
     headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 
     HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(params, headers);
-    ResponseEntity<Map<String, Object>> response =
-        restTemplate.exchange(
-            url,
-            HttpMethod.POST,
-            request,
-            new ParameterizedTypeReference<Map<String, Object>>() {});
 
-    // 안전하게 access_token 추출
-    return (String)
-        Objects.requireNonNull(response.getBody(), "Token response body is null")
-            .get("access_token");
+    try {
+      ResponseEntity<Map<String, Object>> response =
+          restTemplate.exchange(
+              url, HttpMethod.POST, request, new ParameterizedTypeReference<>() {});
+
+      return (String)
+          Objects.requireNonNull(response.getBody(), "Token response body is null")
+              .get("access_token");
+
+    } catch (Exception e) {
+      throw new OAuthException("Google OAuth 토큰 발급 실패", e);
+    }
   }
 
   @Override
@@ -67,18 +70,26 @@ public class GoogleOAuthProvider implements IOAuthProvider {
     headers.setBearerAuth(accessToken);
     HttpEntity<Void> request = new HttpEntity<>(headers);
 
-    ResponseEntity<Map<String, Object>> response =
-        restTemplate.exchange(
-            url, HttpMethod.GET, request, new ParameterizedTypeReference<Map<String, Object>>() {});
+    try {
+      ResponseEntity<Map<String, Object>> response =
+          restTemplate.exchange(
+              url,
+              HttpMethod.GET,
+              request,
+              new ParameterizedTypeReference<Map<String, Object>>() {});
 
-    Map<String, Object> body =
-        Objects.requireNonNull(response.getBody(), "Failed to retrieve user information");
+      Map<String, Object> body =
+          Objects.requireNonNull(response.getBody(), "Failed to retrieve user information");
 
-    OAuthUserDTO user = new OAuthUserDTO();
-    user.setId((String) body.get("id"));
-    user.setName((String) body.get("name"));
-    user.setEmail((String) body.get("email"));
+      OAuthUserDTO user = new OAuthUserDTO();
+      user.setId((String) body.get("id"));
+      user.setName((String) body.get("name"));
+      user.setEmail((String) body.get("email"));
 
-    return user;
+      return user;
+
+    } catch (Exception e) {
+      throw new OAuthException("Google OAuth 사용자 정보 조회 실패", e);
+    }
   }
 }

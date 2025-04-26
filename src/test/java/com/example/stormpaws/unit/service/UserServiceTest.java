@@ -5,7 +5,7 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 import com.example.stormpaws.domain.model.UserModel;
-import com.example.stormpaws.repository.UserRepository;
+import com.example.stormpaws.infra.jpa.UserRepository;
 import com.example.stormpaws.service.OAuth.IOAuthProvider;
 import com.example.stormpaws.service.OAuth.OAuthProviderFactory;
 import com.example.stormpaws.service.UserService;

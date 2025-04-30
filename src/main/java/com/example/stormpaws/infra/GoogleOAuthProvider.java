@@ -1,5 +1,6 @@
 package com.example.stormpaws.infra;
 
+import com.example.stormpaws.service.OAuth.IOAuthProvider;
 import com.example.stormpaws.service.dto.OAuthUserDTO;
 import com.example.stormpaws.service.exception.OAuthException;
 import com.example.stormpaws.service.OAuth.IOAuthProvider;

@@ -1,0 +1,5 @@
+GET {{stormpaw-host}}/decks/1
+Content-Type: application/json
+Authorization: Bearer {{stormpaw-jwt}}
+
+

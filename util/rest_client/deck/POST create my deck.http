@@ -1,0 +1,3 @@
+POST {{stormpaw-host}}/users/me/decks
+Content-Type: application/json
+Authorization: Bearer {{stormpaw-jwt}}

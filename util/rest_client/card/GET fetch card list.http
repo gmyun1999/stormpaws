@@ -1,0 +1,5 @@
+GET {{stormpaw-host}}/cards?
+Content-Type: application/json
+Authorization: Bearer {{stormpaw-jwt}}
+
+

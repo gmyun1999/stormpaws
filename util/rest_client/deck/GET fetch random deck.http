@@ -1,0 +1,3 @@
+GET {{stormpaw-host}}/decks/random-opponents?count=10
+Content-Type: application/json
+Authorization: Bearer {{stormpaw-jwt}}

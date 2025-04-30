@@ -1,4 +1,4 @@
-GET {{stormpaw-host}}/user/info/1
+GET {{stormpaw-host}}/user/me
 Content-Type: application/json
 Authorization: Bearer {{stormpaw-jwt}}
 

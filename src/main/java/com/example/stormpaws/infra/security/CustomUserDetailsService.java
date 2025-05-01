@@ -1,7 +1,7 @@
 package com.example.stormpaws.infra.security;
 
 import com.example.stormpaws.domain.model.UserModel;
-import com.example.stormpaws.repository.UserRepository;
+import com.example.stormpaws.infra.jpa.UserRepository;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;

@@ -35,9 +35,11 @@ public class UserController {
     return ResponseEntity.ok(response);
   }
 
-  // GET /user/me : 현재 인증된 사용자 정보 조회
-  // @GetMapping("/me")
-  // public ResponseEntity<ApiResponse<?>> getUserInfo() {
-  //     // 구현하세요
+  //   @GetMapping("/me")
+  //   public ResponseEntity<ApiResponse<OAuthUserDTO>> getUserInfo(
+  //     @AuthenticationPrincipal CustomUserDetails userDetails
+  //   ) {
+  //     // db에서 직접 가져오는게 맞는지, 아니면 UserDetails에서 가져오는게 맞는지 고민해보세요
+  //   }
   // }
 }

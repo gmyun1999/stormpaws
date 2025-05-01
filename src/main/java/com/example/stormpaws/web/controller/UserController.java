@@ -2,7 +2,7 @@ package com.example.stormpaws.web.controller;
 
 import com.example.stormpaws.service.UserService;
 import com.example.stormpaws.service.dto.AuthDataDTO;
-import com.example.stormpaws.web.dto.ApiResponse;
+import com.example.stormpaws.web.dto.response.ApiResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 

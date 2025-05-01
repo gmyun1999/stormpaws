@@ -30,6 +30,9 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-security'
 
+    //bean validation
+    implementation 'org.hibernate.validator:hibernate-validator:7.0.0.Final'
+
     // Flyway
     implementation 'org.flywaydb:flyway-core:9.21.1'
     runtimeOnly 'org.postgresql:postgresql:42.6.0'

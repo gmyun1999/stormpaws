@@ -1,4 +1,4 @@
-GET {{stormpaw-host}}/users/me/decks?page=1&size=10
+GET {{stormpaw-host}}/user/me/decks?page=1&size=10
 Content-Type: application/json
 Authorization: Bearer {{stormpaw-jwt}}
 

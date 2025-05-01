@@ -1,8 +1,8 @@
 package com.example.stormpaws.infra;
 
+import com.example.stormpaws.service.OAuth.IOAuthProvider;
 import com.example.stormpaws.service.dto.OAuthUserDTO;
 import com.example.stormpaws.service.exception.OAuthException;
-import com.example.stormpaws.service.OAuth.IOAuthProvider;
 import java.util.Map;
 import java.util.Objects;
 import org.springframework.beans.factory.annotation.Value;
@@ -11,6 +11,8 @@ import org.springframework.http.*;
 import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.HttpClientErrorException;//for exception
+import org.springframework.web.client.HttpServerErrorException;//for exception
 import org.springframework.web.client.RestTemplate;
 
 @Component
@@ -57,9 +59,19 @@ public class GoogleOAuthProvider implements IOAuthProvider {
           Objects.requireNonNull(response.getBody(), "Token response body is null")
               .get("access_token");
 
-    } catch (Exception e) {
-      throw new OAuthException("Google OAuth 토큰 발급 실패", e);
+    } catch (HttpClientErrorException | HttpServerErrorException e){
+      // Google API에서 반환한 응답 본문을 가져오기
+      String errorResponse = e.getResponseBodyAsString();
+
+      // 상세 오류 로그 추가
+      System.err.println("Google OAuth token request failed: " + errorResponse);
+
+      // OAuthException에 오류 메시지와 응답 본문 전달
+      throw new OAuthException("Google OAuth 토큰 발급 실패", errorResponse);
     }
+    catch (Exception e) {
+      throw new OAuthException("Google OAuth 토큰 발급 실패", e);
+    } 
   }
 
   @Override

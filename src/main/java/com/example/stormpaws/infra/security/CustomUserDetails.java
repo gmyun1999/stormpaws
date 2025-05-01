@@ -1,6 +1,6 @@
 package com.example.stormpaws.infra.security;
 
-import com.example.stormpaws.domain.constant.userRole;
+import com.example.stormpaws.domain.constant.UserRole;
 import com.example.stormpaws.domain.model.UserModel;
 import java.util.Collection;
 import java.util.Collections;
@@ -18,7 +18,7 @@ public class CustomUserDetails implements UserDetails {
 
   @Override
   public Collection<? extends GrantedAuthority> getAuthorities() {
-    return Collections.singletonList(new SimpleGrantedAuthority(userRole.ROLE_USER.name()));
+    return Collections.singletonList(new SimpleGrantedAuthority(UserRole.ROLE_USER.name()));
   }
 
   @Override

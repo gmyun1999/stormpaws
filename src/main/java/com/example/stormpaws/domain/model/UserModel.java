@@ -2,6 +2,7 @@ package com.example.stormpaws.domain.model;
 
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
+import java.util.List;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -30,6 +31,9 @@ public class UserModel {
 
   @Column(length = 64)
   private String email;
+
+  @OneToMany(mappedBy = "user")
+  private List<DeckModel> deck;
 
   @Column(name = "mobile_no", length = 16)
   private String mobileNo;

@@ -7,7 +7,9 @@ import jakarta.persistence.ForeignKey;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import java.time.LocalDateTime;
+import java.util.List;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -32,6 +34,9 @@ public class DeckModel {
   @ManyToOne
   @JoinColumn(name = "user_id", foreignKey = @ForeignKey(value = ConstraintMode.NO_CONSTRAINT))
   private UserModel user;
+
+  @OneToMany(mappedBy = "deck")
+  private List<DeckCardModel> decklist;
 
   @Column(name = "is_default", nullable = false)
   private boolean isDefaultDeck; // 기본 덱 여부

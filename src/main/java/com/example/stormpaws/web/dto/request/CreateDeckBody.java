@@ -5,7 +5,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import java.util.List;
 
-public record DeckCreateRequest(
+public record CreateDeckBody(
     @NotNull @Size(min = 3, max = 50) String name, @NotNull List<CardDTO> cards) {
   public record CardDTO(@NotNull String cardId, @Min(1) int quantity, @Min(1) int pos) {}
 }

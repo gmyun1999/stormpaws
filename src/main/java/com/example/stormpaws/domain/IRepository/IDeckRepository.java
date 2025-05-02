@@ -14,4 +14,6 @@ public interface IDeckRepository {
 
   // 덱을 저장하는 메소드
   DeckModel save(DeckModel deckModel);
+
+  List<String> findAllUserIdsWithDecks();
 }

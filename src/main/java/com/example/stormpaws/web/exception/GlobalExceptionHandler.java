@@ -1,7 +1,7 @@
 package com.example.stormpaws.web.exception;
 
 import com.example.stormpaws.service.exception.OAuthException;
-import com.example.stormpaws.web.dto.ApiResponse;
+import com.example.stormpaws.web.dto.response.ApiResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;

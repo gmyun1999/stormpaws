@@ -2,9 +2,9 @@ package com.example.stormpaws.web.controller;
 
 import com.example.stormpaws.service.UserService;
 import com.example.stormpaws.service.dto.AuthDataDTO;
-import com.example.stormpaws.web.dto.ApiResponse;
-import com.example.stormpaws.web.dto.OAuthCodeRequest;
 import jakarta.validation.Valid;
+import com.example.stormpaws.web.dto.OAuthCodeRequest;
+import com.example.stormpaws.web.dto.response.ApiResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,7 +19,8 @@ public class UserController {
     this.authService = authService;
   }
 
-  @PostMapping("/login/{authServer}")//클라이언트로 JWT토큰 넘겨주기
+
+  @PostMapping("/login/{authServer}") // 클라이언트로 JWT토큰 넘겨주기
   public ResponseEntity<ApiResponse<AuthDataDTO>> sendToken(
       @PathVariable("authServer") String authServer, @RequestBody OAuthCodeRequest request) {
     AuthDataDTO authData = authService.login(authServer, request.getCode());

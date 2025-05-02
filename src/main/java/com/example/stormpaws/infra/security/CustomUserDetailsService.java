@@ -1,7 +1,7 @@
 package com.example.stormpaws.infra.security;
 
+import com.example.stormpaws.domain.IRepository.IUserRepository;
 import com.example.stormpaws.domain.model.UserModel;
-import com.example.stormpaws.infra.jpa.UserRepository;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -10,9 +10,9 @@ import org.springframework.stereotype.Service;
 @Service
 public class CustomUserDetailsService implements UserDetailsService {
 
-  private final UserRepository userRepository;
+  private final IUserRepository userRepository;
 
-  public CustomUserDetailsService(UserRepository userRepository) {
+  public CustomUserDetailsService(IUserRepository userRepository) {
     this.userRepository = userRepository;
   }
 

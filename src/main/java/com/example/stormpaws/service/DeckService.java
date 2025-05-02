@@ -93,7 +93,8 @@ public class DeckService {
     return deckModel;
   }
 
-  // public List<DeckModel> getRandomDeckList(int size) {
+  // public List<DeckModel> getRandomDecks(int count, UserModel user) {
+
   // }
 
   @Transactional

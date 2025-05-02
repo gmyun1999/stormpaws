@@ -5,7 +5,7 @@ import com.example.stormpaws.infra.security.CustomUserDetails;
 import com.example.stormpaws.service.DeckService;
 import com.example.stormpaws.service.dto.DeckCardDTO;
 import com.example.stormpaws.service.dto.PagedResultDTO;
-import com.example.stormpaws.web.dto.request.DeckCreateRequest;
+import com.example.stormpaws.web.dto.request.CreateDeckBody;
 import com.example.stormpaws.web.dto.response.ApiResponse;
 import jakarta.validation.Valid;
 import java.util.List;
@@ -32,24 +32,26 @@ public class DeckController {
   }
 
   @GetMapping("/decks/{deckId}")
-  public ResponseEntity<DeckModel> getDeckByID(@PathVariable String deckId) {
+  public ResponseEntity<ApiResponse<DeckModel>> getDeckByID(@PathVariable String deckId) {
     DeckModel deck = deckService.getDeckById(deckId);
-    return ResponseEntity.ok(deck);
+    ApiResponse<DeckModel> response = new ApiResponse<>(true, "success", deck);
+    return ResponseEntity.ok(response);
   }
 
   @GetMapping("/user/me/decks")
-  public ResponseEntity<PagedResultDTO<DeckModel>> getMyDecks(
+  public ResponseEntity<ApiResponse<PagedResultDTO<DeckModel>>> getMyDecks(
       @AuthenticationPrincipal CustomUserDetails userDetails,
-      @RequestParam(defaultValue = "0") int page,
+      @RequestParam(defaultValue = "1") int page,
       @RequestParam(defaultValue = "10") int size) {
     String userId = userDetails.getUser().getId();
     PagedResultDTO<DeckModel> result = deckService.getMyDeckList(userId, page, size);
-    return ResponseEntity.ok(result);
+    ApiResponse<PagedResultDTO<DeckModel>> response = new ApiResponse<>(true, "success", result);
+    return ResponseEntity.ok(response);
   }
 
   @PostMapping("/user/me/decks")
   public ResponseEntity<ApiResponse<DeckModel>> createDeck(
-      @Valid @RequestBody DeckCreateRequest requestDTO,
+      @Valid @RequestBody CreateDeckBody requestDTO,
       @AuthenticationPrincipal CustomUserDetails userDetails) {
     DeckCardDTO deckCardDTO = mapToDeckCardDTO(requestDTO);
     DeckModel deckModel = deckService.createDeck(deckCardDTO, userDetails.getUser());
@@ -59,10 +61,18 @@ public class DeckController {
     return ResponseEntity.status(HttpStatus.CREATED).body(response);
   }
 
-  // @GetMapping("/decks/random-opponents")
-  // public ResponseEntity<?> getRandomDeck() {}
+  // @GetMapping("/decks/random")
+  // public ResponseEntity<ApiResponse<List<DeckModel>>> getRandomDecks(
+  //     @Valid @ModelAttribute RandomDeckQueryParam  count,
+  //     @AuthenticationPrincipal CustomUserDetails userDetails
+  //   ) {
 
-  private DeckCardDTO mapToDeckCardDTO(DeckCreateRequest requestDTO) {
+  //   List<DeckModel> result = deckService.getRandomDecks(count, userDetails.getUser());
+  //   ApiResponse<List<DeckModel>> response = new ApiResponse<>(true, "success", result);
+  //   return ResponseEntity.ok(response);
+  // }
+
+  private DeckCardDTO mapToDeckCardDTO(CreateDeckBody requestDTO) {
     List<DeckCardDTO.CardDTO> cardDTOList =
         requestDTO.cards().stream()
             .map(card -> new DeckCardDTO.CardDTO(card.cardId(), card.quantity(), card.pos()))

@@ -1,8 +1,11 @@
 package com.example.stormpaws.domain.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import java.util.List;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -18,6 +21,10 @@ public class CardModel {
   @Id
   @Column(length = 36)
   private String id;
+
+  @OneToMany(mappedBy = "card")
+  @JsonBackReference
+  private List<DeckCardModel> decklist;
 
   @Column(length = 36, nullable = false)
   private String name;

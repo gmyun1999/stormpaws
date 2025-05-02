@@ -1,7 +1,10 @@
 package com.example.stormpaws.domain.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
+import java.util.List;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -29,25 +32,36 @@ public class UserModel {
   private String name;
 
   @Column(length = 64)
+  @JsonIgnore
   private String email;
 
+  @OneToMany(mappedBy = "user")
+  @JsonBackReference
+  private List<DeckModel> deck;
+
   @Column(name = "mobile_no", length = 16)
+  @JsonIgnore
   private String mobileNo;
 
   @Column(name = "oauth_type", length = 16, nullable = false)
+  @JsonIgnore
   private String oauthType;
 
   @Column(name = "oauth_id", length = 64, nullable = false)
+  @JsonIgnore
   private String oauthId;
 
   @Column(name = "tos_agreed", nullable = false)
+  @JsonIgnore
   private boolean tosAgreed;
 
   @CreationTimestamp
   @Column(name = "created_at", updatable = false)
+  @JsonIgnore
   private LocalDateTime createdAt;
 
   @UpdateTimestamp
   @Column(name = "updated_at")
+  @JsonIgnore
   private LocalDateTime updatedAt;
 }

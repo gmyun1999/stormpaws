@@ -1,5 +1,7 @@
 package com.example.stormpaws.domain.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.Column;
 import jakarta.persistence.ConstraintMode;
 import jakarta.persistence.Entity;
@@ -26,6 +28,7 @@ public class DeckCardModel {
 
   @ManyToOne
   @JoinColumn(name = "deck_id", foreignKey = @ForeignKey(value = ConstraintMode.NO_CONSTRAINT))
+  @JsonBackReference
   private DeckModel deck;
 
   @ManyToOne
@@ -33,6 +36,7 @@ public class DeckCardModel {
       name = "card_id",
       nullable = false,
       foreignKey = @ForeignKey(value = ConstraintMode.NO_CONSTRAINT))
+  @JsonManagedReference
   private CardModel card;
 
   @Column(name = "card_pos", nullable = false)

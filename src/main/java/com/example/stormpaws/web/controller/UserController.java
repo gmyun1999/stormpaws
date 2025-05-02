@@ -19,15 +19,7 @@ public class UserController {
     this.authService = authService;
   }
 
-  @GetMapping("/login/{authServer}")
-  public ResponseEntity<ApiResponse<AuthDataDTO>> login(
-      @PathVariable String authServer, @RequestParam String code) {
-    AuthDataDTO authData = authService.login(authServer, code);
-    ApiResponse<AuthDataDTO> response = new ApiResponse<>(true, "Login Success", authData);
-    return ResponseEntity.ok(response);
-  }
-
-  @PostMapping("/getToken/{authServer}")//클라이언트로 JWT토큰 넘겨주기
+  @PostMapping("/login/{authServer}")//클라이언트로 JWT토큰 넘겨주기
   public ResponseEntity<ApiResponse<AuthDataDTO>> sendToken(
       @PathVariable("authServer") String authServer, @RequestBody OAuthCodeRequest request) {
     AuthDataDTO authData = authService.login(authServer, request.getCode());

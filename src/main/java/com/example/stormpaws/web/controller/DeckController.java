@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -33,6 +34,7 @@ public class DeckController {
     this.deckService = deckService;
   }
 
+  @PreAuthorize("isAuthenticated()")
   @GetMapping("/decks/{deckId}")
   public ResponseEntity<ApiResponse<DeckModel>> getDeckByID(@PathVariable String deckId) {
     DeckModel deck = deckService.getDeckById(deckId);
@@ -40,6 +42,7 @@ public class DeckController {
     return ResponseEntity.ok(response);
   }
 
+  @PreAuthorize("isAuthenticated()")
   @GetMapping("/user/me/decks")
   public ResponseEntity<ApiResponse<PagedResultDTO<DeckModel>>> getMyDecks(
       @AuthenticationPrincipal CustomUserDetails userDetails,
@@ -51,6 +54,7 @@ public class DeckController {
     return ResponseEntity.ok(response);
   }
 
+  @PreAuthorize("isAuthenticated()")
   @PostMapping("/user/me/decks")
   public ResponseEntity<ApiResponse<DeckModel>> createDeck(
       @Valid @RequestBody CreateDeckBody requestDTO,
@@ -64,6 +68,7 @@ public class DeckController {
   }
 
   // TODO 전역 advice로 처리히기
+  @PreAuthorize("isAuthenticated()")
   @GetMapping("/decks/random")
   public ResponseEntity<ApiResponse<PagedResultDTO<DeckModel>>> getRandomDecks(
       @Valid @ModelAttribute RandomDeckQueryParam param,

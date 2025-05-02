@@ -9,9 +9,11 @@ import com.example.stormpaws.domain.model.UserModel;
 import com.example.stormpaws.service.dto.DeckCardDTO;
 import com.example.stormpaws.service.dto.PagedResultDTO;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.ThreadLocalRandom;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -93,9 +95,27 @@ public class DeckService {
     return deckModel;
   }
 
-  // public List<DeckModel> getRandomDecks(int count, UserModel user) {
+  public PagedResultDTO<DeckModel> getRandomDecks(int count, UserModel user) {
+    // 1) 덱 보유 유저 ID 조회 + 현 유저 제외 + 랜덤 n명 선택
+    List<String> userIds = deckRepository.findAllUserIdsWithDecks();
+    userIds.remove(user.getId());
+    if (userIds.size() > count) {
+      Collections.shuffle(userIds);
+      userIds = userIds.subList(0, count);
+    }
 
-  // }
+    // 2) 선택된 유저들로부터 덱 랜덤 1개씩 뽑기
+    List<DeckModel> randomDecks = new ArrayList<>(userIds.size());
+    ThreadLocalRandom rnd = ThreadLocalRandom.current();
+    for (String uid : userIds) {
+      List<DeckModel> decks = deckRepository.findByUserIdWithDeckCardsAndCards(uid);
+      DeckModel pick = decks.get(rnd.nextInt(decks.size()));
+      randomDecks.add(pick);
+    }
+    int pageSize = Math.min(count, randomDecks.size());
+    // 1페이지(page 1)에 pageSize만큼 한꺼번에 뽑아 돌려줌
+    return Paginator.paginate(randomDecks, 1, pageSize);
+  }
 
   @Transactional
   private void saveDeckAndDeckCards(DeckModel deckModel, List<DeckCardModel> deckCardModels) {

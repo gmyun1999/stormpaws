@@ -6,6 +6,7 @@ import com.example.stormpaws.service.DeckService;
 import com.example.stormpaws.service.dto.DeckCardDTO;
 import com.example.stormpaws.service.dto.PagedResultDTO;
 import com.example.stormpaws.web.dto.request.CreateDeckBody;
+import com.example.stormpaws.web.dto.request.RandomDeckQueryParam;
 import com.example.stormpaws.web.dto.response.ApiResponse;
 import jakarta.validation.Valid;
 import java.util.List;
@@ -14,6 +15,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -61,16 +63,16 @@ public class DeckController {
     return ResponseEntity.status(HttpStatus.CREATED).body(response);
   }
 
-  // @GetMapping("/decks/random")
-  // public ResponseEntity<ApiResponse<List<DeckModel>>> getRandomDecks(
-  //     @Valid @ModelAttribute RandomDeckQueryParam  count,
-  //     @AuthenticationPrincipal CustomUserDetails userDetails
-  //   ) {
-
-  //   List<DeckModel> result = deckService.getRandomDecks(count, userDetails.getUser());
-  //   ApiResponse<List<DeckModel>> response = new ApiResponse<>(true, "success", result);
-  //   return ResponseEntity.ok(response);
-  // }
+  // TODO 전역 advice로 처리히기
+  @GetMapping("/decks/random")
+  public ResponseEntity<ApiResponse<PagedResultDTO<DeckModel>>> getRandomDecks(
+      @Valid @ModelAttribute RandomDeckQueryParam param,
+      @AuthenticationPrincipal CustomUserDetails userDetails) {
+    int count = param.resolvedCount();
+    PagedResultDTO<DeckModel> result = deckService.getRandomDecks(count, userDetails.getUser());
+    ApiResponse<PagedResultDTO<DeckModel>> response = new ApiResponse<>(true, "success", result);
+    return ResponseEntity.ok(response);
+  }
 
   private DeckCardDTO mapToDeckCardDTO(CreateDeckBody requestDTO) {
     List<DeckCardDTO.CardDTO> cardDTOList =

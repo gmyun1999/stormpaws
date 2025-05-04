@@ -4,6 +4,7 @@ import com.example.stormpaws.domain.IRepository.ICardRepository;
 import com.example.stormpaws.domain.model.CardModel;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -13,6 +14,12 @@ public class CardService {
 
   public CardService(ICardRepository cardRepository) {
     this.cardRepository = cardRepository;
+  }
+
+  public CardModel getCardById(String cardId) {
+    Optional<CardModel> card = cardRepository.findById(cardId);
+    return card.orElseThrow(
+        () -> new IllegalArgumentException("Card not found with id: " + cardId));
   }
 
   public List<CardModel> findCardsByIds(List<String> cardIds) {

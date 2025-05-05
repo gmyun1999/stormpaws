@@ -33,7 +33,6 @@ public class UserController {
     this.authService = authService;
   }
 
-
   @PostMapping("/login/{authServer}") // 클라이언트로 JWT토큰 넘겨주기
   public ResponseEntity<ApiResponse<AuthDataDTO>> sendToken(
       @PathVariable("authServer") String authServer, @RequestBody OAuthCodeRequest request) {

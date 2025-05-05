@@ -59,7 +59,7 @@ public class GoogleOAuthProvider implements IOAuthProvider {
           Objects.requireNonNull(response.getBody(), "Token response body is null")
               .get("access_token");
 
-    } catch (HttpClientErrorException | HttpServerErrorException e){
+    } catch (HttpClientErrorException | HttpServerErrorException e) {
       // Google API에서 반환한 응답 본문을 가져오기
       String errorResponse = e.getResponseBodyAsString();
 

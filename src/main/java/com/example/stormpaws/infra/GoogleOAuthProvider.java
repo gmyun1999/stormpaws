@@ -68,8 +68,7 @@ public class GoogleOAuthProvider implements IOAuthProvider {
 
       // OAuthException에 오류 메시지와 응답 본문 전달
       throw new OAuthException("Google OAuth 토큰 발급 실패", errorResponse);
-    }
-    catch (Exception e) {
+    } catch (Exception e) {
       throw new OAuthException("Google OAuth 토큰 발급 실패", e);
     } 
   }

@@ -22,6 +22,7 @@ public class CardService {
     Optional<CardModel> card = cardRepository.findById(cardId);
     return card.orElseThrow(
         () -> new IllegalArgumentException("Card not found with id: " + cardId));
+  }
 
   public PagedResultDTO<CardModel> getCardList(int page, int size) {
     // 1. 저장소에서 모든 카드 목록을 가져옵니다.

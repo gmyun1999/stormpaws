@@ -33,4 +33,7 @@ public interface DeckRepository extends JpaRepository<DeckModel, String>, IDeckR
         WHERE d.user.id = :userId
         """)
   List<DeckModel> findByUserIdWithDeckCardsAndCards(@Param("userId") String userId);
+
+  @Query("SELECT DISTINCT d.user.id FROM DeckModel d")
+  List<String> findAllUserIdsWithDecks();
 }

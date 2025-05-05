@@ -17,7 +17,6 @@ public class CardService {
     this.cardRepository = cardRepository;
   }
 
-
   public CardModel getCardById(String cardId) {
     Optional<CardModel> card = cardRepository.findById(cardId);
     return card.orElseThrow(

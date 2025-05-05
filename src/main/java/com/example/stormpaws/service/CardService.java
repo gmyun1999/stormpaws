@@ -17,18 +17,15 @@ public class CardService {
     this.cardRepository = cardRepository;
   }
 
-
   public CardModel getCardById(String cardId) {
     Optional<CardModel> card = cardRepository.findById(cardId);
     return card.orElseThrow(
         () -> new IllegalArgumentException("Card not found with id: " + cardId));
+  }
 
   public PagedResultDTO<CardModel> getCardList(int page, int size) {
-    // 1. 저장소에서 모든 카드 목록을 가져옵니다.
-    List<CardModel> allCards = cardRepository.findAll(); // ICardRepository의 findAll() 사용 [1][2]
-
+    List<CardModel> allCards = cardRepository.findAll();
     return Paginator.paginate(allCards, page, size);
-
   }
 
   public List<CardModel> findCardsByIds(List<String> cardIds) {

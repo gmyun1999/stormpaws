@@ -70,7 +70,7 @@ public class GoogleOAuthProvider implements IOAuthProvider {
       throw new OAuthException("Google OAuth 토큰 발급 실패", errorResponse);
     } catch (Exception e) {
       throw new OAuthException("Google OAuth 토큰 발급 실패", e);
-    } 
+    }
   }
 
   @Override

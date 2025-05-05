@@ -24,11 +24,8 @@ public class CardService {
   }
 
   public PagedResultDTO<CardModel> getCardList(int page, int size) {
-    // 1. 저장소에서 모든 카드 목록을 가져옵니다.
-    List<CardModel> allCards = cardRepository.findAll(); // ICardRepository의 findAll() 사용 [1][2]
-
+    List<CardModel> allCards = cardRepository.findAll();
     return Paginator.paginate(allCards, page, size);
-
   }
 
   public List<CardModel> findCardsByIds(List<String> cardIds) {

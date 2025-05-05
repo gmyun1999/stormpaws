@@ -8,6 +8,7 @@ import com.example.stormpaws.service.dto.OAuthUserDTO;
 import com.example.stormpaws.web.dto.OAuthCodeRequest;
 import com.example.stormpaws.web.dto.response.ApiResponse;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -36,7 +37,7 @@ public class UserController {
   //     // db에서 직접 가져오는게 맞는지, 아니면 UserDetails에서 가져오는게 맞는지 고민해보세요
   //   }
   // }
-
+  @PreAuthorize("isAuthenticated()")
   @GetMapping("/me")
   public ResponseEntity<ApiResponse<OAuthUserDTO>> getUserInfo(
       @AuthenticationPrincipal CustomUserDetails userDetails) {

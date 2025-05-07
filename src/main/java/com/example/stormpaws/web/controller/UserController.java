@@ -9,7 +9,7 @@ import com.example.stormpaws.service.token.ITokenProvider;
 
 import jakarta.validation.Valid;
 import com.example.stormpaws.web.dto.OAuthCodeRequest;
-import com.example.stormpaws.web.dto.request.JwtRefreshTokenRequest;
+import com.example.stormpaws.web.dto.request.RefreshTokenRequest;
 import com.example.stormpaws.web.dto.response.ApiResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,7 +44,7 @@ public class UserController {
   // 클라이언트로부터 refresh토큰을 받아 다시 access 토큰 발급하기기
   @PostMapping("/refreshToken")
   public ResponseEntity<ApiResponse<AuthDataDTO>> reissueAccess(
-      @RequestBody JwtRefreshTokenRequest request) {
+      @RequestBody RefreshTokenRequest request) {
     if (tokenService.validateToken(request.getRefreshToken())) { // 토큰이 유효하다면
       AuthDataDTO authData = authService.reIssueAccessToken(request.getRefreshToken());
       ApiResponse<AuthDataDTO> response = new ApiResponse<>(true, "Success", authData);

@@ -112,8 +112,12 @@ public class DeckService {
       DeckModel pick = decks.get(rnd.nextInt(decks.size()));
       randomDecks.add(pick);
     }
-    int pageSize = Math.min(count, randomDecks.size());
-    // 1페이지(page 1)에 pageSize만큼 한꺼번에 뽑아 돌려줌
+    int pageSize;
+    if (randomDecks.isEmpty()) {
+      pageSize = 1;
+    } else {
+      pageSize = Math.min(count, randomDecks.size());
+    }
     return Paginator.paginate(randomDecks, 1, pageSize);
   }
 

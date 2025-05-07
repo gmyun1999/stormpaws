@@ -50,7 +50,7 @@ public class UserController {
       ApiResponse<AuthDataDTO> response = new ApiResponse<>(true, "Success", authData);
       return ResponseEntity.ok(response);
     } else {
-      ApiResponse<AuthDataDTO> errorResponse = new ApiResponse<>(false, "Refresh expired", null);
+      ApiResponse<AuthDataDTO> errorResponse = new ApiResponse<>(false, "Invalid Token", null);
       return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse);
     }
   }

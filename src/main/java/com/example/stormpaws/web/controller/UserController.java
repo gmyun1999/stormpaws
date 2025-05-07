@@ -5,18 +5,29 @@ import com.example.stormpaws.infra.security.CustomUserDetails;
 import com.example.stormpaws.service.UserService;
 import com.example.stormpaws.service.dto.AuthDataDTO;
 import com.example.stormpaws.service.dto.OAuthUserDTO;
+import com.example.stormpaws.service.token.ITokenProvider;
+
+import jakarta.validation.Valid;
 import com.example.stormpaws.web.dto.OAuthCodeRequest;
+import com.example.stormpaws.web.dto.request.RefreshTokenRequest;
 import com.example.stormpaws.web.dto.response.ApiResponse;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+
 
 @RestController
 @RequestMapping("/user")
 public class UserController {
 
   private final UserService authService;
+  
+  @Autowired
+  private ITokenProvider tokenService;
 
   public UserController(UserService authService) {
     this.authService = authService;
@@ -28,6 +39,20 @@ public class UserController {
     AuthDataDTO authData = authService.login(authServer, request.getCode());
     ApiResponse<AuthDataDTO> response = new ApiResponse<>(true, "Success", authData);
     return ResponseEntity.ok(response);
+  }
+
+  // 클라이언트로부터 refresh토큰을 받아 다시 access 토큰 발급하기기
+  @PostMapping("/refreshToken")
+  public ResponseEntity<ApiResponse<AuthDataDTO>> reissueAccess(
+      @RequestBody RefreshTokenRequest request) {
+    if (tokenService.validateToken(request.getRefreshToken())) { // 토큰이 유효하다면
+      AuthDataDTO authData = authService.reIssueAccessToken(request.getRefreshToken());
+      ApiResponse<AuthDataDTO> response = new ApiResponse<>(true, "Success", authData);
+      return ResponseEntity.ok(response);
+    } else {
+      ApiResponse<AuthDataDTO> errorResponse = new ApiResponse<>(false, "Invalid Token", null);
+      return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse);
+    }
   }
 
   //   @GetMapping("/me")

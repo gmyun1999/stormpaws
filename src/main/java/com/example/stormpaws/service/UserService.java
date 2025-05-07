@@ -65,4 +65,15 @@ public class UserService {
 
     return new AuthDataDTO(accessToken, refreshToken);
   }
+
+  public AuthDataDTO reIssueAccessToken(String refreshToken) {
+    // refresh토큰으로 user id 탐색색
+    String userId = tokenProvider.getUserIdFromToken(refreshToken);
+
+    // 탐색한 user id로 유저 모델을 받아 새 accesstoken 생성
+    UserModel user = userRepository.findById(userId).get();
+    String accessToken = tokenProvider.createAccessToken(user);
+
+    return new AuthDataDTO(accessToken, refreshToken);
+  }
 }

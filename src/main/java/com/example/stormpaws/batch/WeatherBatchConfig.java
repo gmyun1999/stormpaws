@@ -23,10 +23,12 @@ public class WeatherBatchConfig {
   @Bean
   public TaskExecutor taskExecutor() {
     ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-    executor.setCorePoolSize(2);
-    executor.setMaxPoolSize(2);
-    executor.setQueueCapacity(50);
+    executor.setCorePoolSize(5);
+    executor.setMaxPoolSize(5);
+    executor.setQueueCapacity(100);
     executor.setThreadNamePrefix("weather-batch-");
+    executor.setWaitForTasksToCompleteOnShutdown(true);
+    executor.setAwaitTerminationSeconds(60);
     executor.initialize();
     return executor;
   }
@@ -45,11 +47,12 @@ public class WeatherBatchConfig {
       WeatherItemWriter writer,
       @Qualifier("taskExecutor") TaskExecutor taskExecutor) {
     return new StepBuilder("weatherStep", jobRepository)
-        .<List<City>, List<CityWeatherInfoDTO>>chunk(1, transactionManager)
+        .<List<City>, List<CityWeatherInfoDTO>>chunk(5, transactionManager)
         .reader(reader)
         .processor(processor)
         .writer(writer)
         .taskExecutor(taskExecutor)
+        .throttleLimit(5)
         .build();
   }
 }

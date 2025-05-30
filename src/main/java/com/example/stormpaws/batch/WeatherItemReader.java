@@ -11,17 +11,24 @@ import org.springframework.stereotype.Component;
 public class WeatherItemReader implements ItemReader<List<City>> {
   private final List<City> cities = Arrays.asList(City.values());
   private int currentIndex = 0;
-  private static final int BATCH_SIZE = 100;
+  private static final int BATCH_SIZE = 5;
+  private boolean isCompleted = false;
 
   @Override
   public List<City> read() {
-    if (currentIndex >= cities.size()) {
+    if (isCompleted || currentIndex >= cities.size()) {
+      isCompleted = true;
       return null;
     }
 
     int endIndex = Math.min(currentIndex + BATCH_SIZE, cities.size());
     List<City> batch = new ArrayList<>(cities.subList(currentIndex, endIndex));
     currentIndex = endIndex;
+
+    if (currentIndex >= cities.size()) {
+      isCompleted = true;
+    }
+
     return batch;
   }
 }

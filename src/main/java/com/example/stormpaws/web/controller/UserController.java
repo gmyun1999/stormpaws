@@ -6,12 +6,9 @@ import com.example.stormpaws.service.UserService;
 import com.example.stormpaws.service.dto.AuthDataDTO;
 import com.example.stormpaws.service.dto.OAuthUserDTO;
 import com.example.stormpaws.service.token.ITokenProvider;
-
-import jakarta.validation.Valid;
 import com.example.stormpaws.web.dto.OAuthCodeRequest;
 import com.example.stormpaws.web.dto.request.RefreshTokenRequest;
 import com.example.stormpaws.web.dto.response.ApiResponse;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,15 +16,13 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-
 @RestController
 @RequestMapping("/user")
 public class UserController {
 
   private final UserService authService;
-  
-  @Autowired
-  private ITokenProvider tokenService;
+
+  @Autowired private ITokenProvider tokenService;
 
   public UserController(UserService authService) {
     this.authService = authService;

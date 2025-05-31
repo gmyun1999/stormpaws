@@ -31,18 +31,21 @@ public class BattleService {
         deckRepo
             .findByIdWithDeckCardsAndCards(attackerDeckId)
             .orElseThrow(() -> new IllegalArgumentException("Invalid deck ID: " + attackerDeckId));
+
     DeckModel bDeck =
         deckRepo
             .findByIdWithDeckCardsAndCards(defenderDeckId)
             .orElseThrow(() -> new IllegalArgumentException("Invalid deck ID: " + defenderDeckId));
+
     List<Unit> attackers = toUnits(aDeck, weather);
     List<Unit> defenders = toUnits(bDeck, weather);
-    return simulator.simulate(attackers, defenders);
+    return simulator.simulate(attackerDeckId, attackers, defenderDeckId, defenders);
   }
 
   private List<Unit> toUnits(DeckModel deck, WeatherType weather) {
     var cards = new ArrayList<>(deck.getDecklist());
     cards.sort(Comparator.comparingInt(DeckCardModel::getPos));
+
     List<Unit> units = new ArrayList<>();
     for (var dc : cards) {
       CardModel card = dc.getCard();

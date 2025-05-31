@@ -33,13 +33,16 @@ public class BattleSimulator {
   }
 
   /**
-   * 순수 로직: 이미 생성된 유닛 리스트를 받아 시뮬레이션 실행
+   * 순수 로직: 이미 생성된 유닛 리스트와 양쪽 덱 ID를 받아 시뮬레이션 실행
    *
+   * @param attackerDeckId A 덱 식별자
    * @param attackers A 덱 유닛 리스트(순서 보장)
+   * @param defenderDeckId B 덱 식별자
    * @param defenders B 덱 유닛 리스트(순서 보장)
    * @return BattleResultDTO(승자 + 로그)
    */
-  public BattleResultDTO simulate(List<Unit> attackers, List<Unit> defenders) {
+  public BattleResultDTO simulate(
+      String attackerDeckId, List<Unit> attackers, String defenderDeckId, List<Unit> defenders) {
     // 1) 리스트 → 큐 변환(순서 유지)
     Queue<Unit> aQueue = new LinkedList<>(attackers);
     Queue<Unit> bQueue = new LinkedList<>(defenders);
@@ -52,37 +55,51 @@ public class BattleSimulator {
 
     // 3) 체인 배틀
     while (a != null && b != null) {
-      // 동기화: 이전 종료 시점부터 시작
-      a.nextAttackTime = 1.0 / a.attacksPerSecond;
-      b.nextAttackTime = 1.0 / b.attacksPerSecond;
+      a.nextAttackTime = currentTime + (1.0 / a.attacksPerSecond);
+      b.nextAttackTime = currentTime + (1.0 / b.attacksPerSecond);
 
-      // 둘 다 살아 있는 동안 턴 진행
       while (a.isAlive() && b.isAlive()) {
+        // 어느 유닛이 다음 공격인지 결정
         Unit attacker = (a.nextAttackTime <= b.nextAttackTime) ? a : b;
         Unit target = (attacker == a) ? b : a;
 
         currentTime = attacker.nextAttackTime;
         target.hp = Math.max(0, target.hp - attacker.attack);
+
+        // 덱 ID 분기 처리
+        String logAttackerDeckId = (attacker == a) ? attackerDeckId : defenderDeckId;
+        String logTargetDeckId = (target == b) ? defenderDeckId : attackerDeckId;
+
         logs.add(
             new BattleLogDTO(
-                currentTime, attacker.cardId, target.cardId, attacker.attack, target.hp));
+                currentTime,
+                logAttackerDeckId,
+                attacker.cardId,
+                logTargetDeckId,
+                target.cardId,
+                attacker.attack,
+                target.hp));
 
         double interval = 1.0 / attacker.attacksPerSecond;
         attacker.nextAttackTime += interval;
       }
 
-      // 승자 남기고 패자 교체
+      // 살아남은 유닛 유지, 패자는 교체
       if (a.isAlive()) {
         b = bQueue.poll();
-        if (b != null) b.nextAttackTime = currentTime + (1.0 / b.attacksPerSecond);
+        if (b != null) {
+          b.nextAttackTime = currentTime + (1.0 / b.attacksPerSecond);
+        }
       } else {
         a = aQueue.poll();
-        if (a != null) a.nextAttackTime = currentTime + (1.0 / a.attacksPerSecond);
+        if (a != null) {
+          a.nextAttackTime = currentTime + (1.0 / a.attacksPerSecond);
+        }
       }
     }
 
     // 4) 승자 결정
-    String winner = (a != null && a.isAlive()) ? "attacker" : "defender";
+    String winner = (a != null && a.isAlive()) ? attackerDeckId : defenderDeckId;
     return new BattleResultDTO(winner, logs);
   }
 }

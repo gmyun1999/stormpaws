@@ -52,7 +52,6 @@ public class WeatherBatchConfig {
         .processor(processor)
         .writer(writer)
         .taskExecutor(taskExecutor)
-        .throttleLimit(5)
         .build();
   }
 }

@@ -98,7 +98,7 @@ public class BattleSimulator {
       }
     }
 
-    // 4) 승자 결정
+    // 승자 결정
     String winner = (a != null && a.isAlive()) ? attackerDeckId : defenderDeckId;
     return new BattleResultDTO(winner, logs);
   }

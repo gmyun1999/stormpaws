@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS cities (
+/* CREATE TABLE IF NOT EXISTS cities (
     id VARCHAR(255) PRIMARY KEY,
     city VARCHAR(255) NOT NULL,
     latitude DOUBLE PRECISION NOT NULL,
@@ -12,4 +12,4 @@ CREATE TABLE IF NOT EXISTS weather_log_model (
     fetched_at TIMESTAMP NOT NULL
 );
 
-CREATE INDEX IF NOT EXISTS idx_city_fetched_at ON weather_log_model (city, fetched_at); 
+CREATE INDEX IF NOT EXISTS idx_city_fetched_at ON weather_log_model (city, fetched_at);  */

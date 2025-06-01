@@ -10,8 +10,6 @@ import com.example.stormpaws.service.dto.CityWeatherInfoDTO;
 import com.example.stormpaws.web.dto.response.OpenMeteoWeatherResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -200,55 +198,40 @@ public class WeatherService {
     }
   }
 
-  @Transactional
-  public List<CityWeatherInfoDTO> fetchAndSaveWeatherBatch(List<City> cities) {
-    if (cities == null || cities.isEmpty()) {
-      log.warn("No cities provided for batch processing");
-      return Collections.emptyList();
-    }
+  /* @Transactional
+   public List<CityWeatherInfoDTO> fetchAndSaveWeatherBatch(List<City> cities) {
+     if (cities == null || cities.isEmpty()) {
+       log.warn("No cities provided for batch processing");
+       return Collections.emptyList();
+     }
 
-    log.info("Starting batch weather fetch for {} cities", cities.size());
-    List<CityWeatherInfoDTO> results = new ArrayList<>();
-    List<Exception> errors = new ArrayList<>();
+     log.info("Starting batch weather fetch for {} cities", cities.size());
+     List<CityWeatherInfoDTO> results = new ArrayList<>();
+     List<Exception> errors = new ArrayList<>();
 
-    for (City city : cities) {
-      try {
-        CityWeatherInfoDTO weatherInfo = fetchWeather(city);
-        results.add(weatherInfo);
-      } catch (Exception e) {
-        log.error("Error processing city {}: {}", city, e.getMessage());
-        errors.add(e);
-      }
-    }
+     for (City city : cities) {
+       try {
+         CityWeatherInfoDTO weatherInfo = fetchWeather(city);
+         results.add(weatherInfo);
+       } catch (Exception e) {
+         log.error("Error processing city {}: {}", city, e.getMessage());
+         errors.add(e);
+       }
+     }
 
-    if (!errors.isEmpty()) {
-      log.warn(
-          "Batch processing completed with {} errors out of {} cities",
-          errors.size(),
-          cities.size());
-    }
+     if (!errors.isEmpty()) {
+       log.warn(
+           "Batch processing completed with {} errors out of {} cities",
+           errors.size(),
+           cities.size());
+     }
 
-    log.info("Batch weather fetch completed. Processed {} cities", results.size());
-    return results;
-  }
-
+     log.info("Batch weather fetch completed. Processed {} cities", results.size());
+     return results;
+   }
+  */
   @Transactional
   public void saveWeather(CityWeatherInfoDTO cityWeatherInfoDTO) {
-    if (cityWeatherInfoDTO == null) {
-      throw new IllegalArgumentException("Weather data cannot be null");
-    }
-
-    if (cityWeatherInfoDTO.getCity() == null) {
-      throw new IllegalArgumentException("City cannot be null");
-    }
-
-    if (cityWeatherInfoDTO.getWeatherType() == null) {
-      throw new IllegalArgumentException("Weather type cannot be null");
-    }
-
-    if (cityWeatherInfoDTO.getFetchedAt() == null) {
-      throw new IllegalArgumentException("Fetched time cannot be null");
-    }
 
     try {
       // DB 저장

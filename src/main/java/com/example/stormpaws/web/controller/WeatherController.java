@@ -35,7 +35,7 @@ public class WeatherController {
   @GetMapping("/{city}")
   public ResponseEntity<CityWeatherInfoDTO> getWeather(@PathVariable("city") City city) {
     CityWeatherInfoDTO weatherInfo = weatherService.fetchWeather(city);
-    weatherService.saveWeather(weatherInfo); // API 호출 시에만 저장
+    weatherService.saveWeather(weatherInfo);
     return ResponseEntity.ok(weatherInfo);
   }
 }

@@ -14,21 +14,21 @@ services:
       - app-net
     restart: "no"
 
-  caddy:
-    image: caddy:latest
-    container_name: caddy-proxy
-    ports:
-      - "80:80"
-      - "443:443"
-    volumes:
-      - ./caddy/Caddyfile:/etc/caddy/Caddyfile
-      - caddy_data:/data
-      - caddy_config:/config
-    depends_on:
-      - app
-    networks:
-      - app-net
-    restart: "no"
+caddy:
+  image: caddy-dns/duckdns
+  ports:
+    - "80:80"
+    - "443:443"
+  volumes:
+    - ./caddy/Caddyfile:/etc/caddy/Caddyfile
+    - caddy_data:/data
+    - caddy_config:/config
+  env_file:
+    - .env
+  depends_on:
+    - app
+  networks:
+    - app-net
 
 networks:
   app-net:

@@ -15,7 +15,7 @@ services:
     restart: unless-stopped
 
   caddy:
-    image: caddy-dns/duckdns
+    image: jaredlander/caddy-dns:duckdns-latest
     container_name: caddy-proxy
     ports:
       - "80:80"

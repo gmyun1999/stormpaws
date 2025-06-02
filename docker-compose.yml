@@ -12,23 +12,25 @@ services:
       - "8080"
     networks:
       - app-net
-    restart: "no"
+    restart: unless-stopped
 
-caddy:
-  image: caddy-dns/duckdns
-  ports:
-    - "80:80"
-    - "443:443"
-  volumes:
-    - ./caddy/Caddyfile:/etc/caddy/Caddyfile
-    - caddy_data:/data
-    - caddy_config:/config
-  env_file:
-    - .env
-  depends_on:
-    - app
-  networks:
-    - app-net
+  caddy:
+    image: caddy-dns/duckdns
+    container_name: caddy-proxy
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./caddy/Caddyfile:/etc/caddy/Caddyfile
+      - caddy_data:/data
+      - caddy_config:/config
+    env_file:
+      - .env
+    depends_on:
+      - app
+    networks:
+      - app-net
+    restart: unless-stopped
 
 networks:
   app-net:

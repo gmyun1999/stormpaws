@@ -1,8 +1,6 @@
 package com.example.stormpaws.batch;
 
 import jakarta.annotation.PostConstruct;
-import java.util.List;
-import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.Job;
@@ -30,15 +28,6 @@ public class WeatherBatchScheduler {
           jdbcTemplate.queryForObject("SELECT COUNT(*) FROM weather_log_model", Integer.class);
       log.info("DB CHECK: weather_log_model 테이블의 전체 데이터 건수: {}", totalRows);
 
-      // 도시별 데이터 건수 확인 (상위 20개)
-      List<Map<String, Object>> cityCounts =
-          jdbcTemplate.queryForList(
-              "SELECT city, COUNT(*) as count FROM weather_log_model GROUP BY city ORDER BY count DESC LIMIT 20");
-      log.info("DB CHECK: weather_log_model 도시별 데이터 건수 (상위 20개):");
-      for (Map<String, Object> row : cityCounts) {
-        log.info("DB CHECK: - {}: {}", row.get("city"), row.get("count"));
-      }
-
     } catch (Exception e) {
       log.error("DB CHECK: 데이터베이스 현황 확인 중 오류 발생: {}", e.getMessage(), e);
     }
@@ -47,7 +36,7 @@ public class WeatherBatchScheduler {
     runWeatherBatch();
   }
 
-  @Scheduled(cron = "0 0 * * * ?") // 매 시간마다 실행
+  @Scheduled(cron = "0 0 12 * * ?") // 매 시간마다 실행
   public void runWeatherBatch() {
     try {
       JobParameters jobParameters =

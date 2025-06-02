@@ -1,11 +1,11 @@
 package com.example.stormpaws.service;
 
-import com.example.stormpaws.domain.IRepository.ICityRepository;
-import com.example.stormpaws.domain.IRepository.IWeatherRepository;
 import com.example.stormpaws.domain.constant.City;
 import com.example.stormpaws.domain.constant.WeatherType;
 import com.example.stormpaws.domain.model.CityList;
 import com.example.stormpaws.domain.model.WeatherLogModel;
+import com.example.stormpaws.infra.jpa.CityRepository;
+import com.example.stormpaws.infra.jpa.WeatherRepository;
 import com.example.stormpaws.service.dto.CityWeatherInfoDTO;
 import com.example.stormpaws.web.dto.response.OpenMeteoWeatherResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -13,7 +13,6 @@ import java.time.LocalDateTime;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
@@ -29,8 +28,8 @@ import org.springframework.web.client.RestTemplate;
 @Service
 @RequiredArgsConstructor
 public class WeatherService {
-  private final IWeatherRepository weatherRepository;
-  private final ICityRepository cityRepository;
+  private final WeatherRepository weatherRepository;
+  private final CityRepository cityRepository;
   private final RestTemplate restTemplate;
   private final RedisTemplate<String, Object> redisTemplate;
   private final ObjectMapper objectMapper;
@@ -39,34 +38,37 @@ public class WeatherService {
   private static final long RETRY_DELAY_MS = 1000;
   private static final long CACHE_EXPIRATION_HOURS = 1;
 
+  private CityWeatherInfoDTO getWeatherInfoFromCacheOrDB(City city) {
+    String redisKey = "weather:" + city.name();
+    Object redisValue = redisTemplate.opsForValue().get(redisKey);
+    CityWeatherInfoDTO cachedWeather = null;
+    if (redisValue instanceof CityWeatherInfoDTO) {
+      cachedWeather = (CityWeatherInfoDTO) redisValue;
+    } else if (redisValue instanceof java.util.Map) {
+      cachedWeather = objectMapper.convertValue(redisValue, CityWeatherInfoDTO.class);
+    }
+    if (cachedWeather != null) {
+      return cachedWeather;
+    }
+
+    Optional<WeatherLogModel> weatherLogOpt =
+        weatherRepository.findFirstByCityOrderByFetchedAtDesc(city);
+    if (weatherLogOpt.isPresent()) {
+      WeatherLogModel weatherLog = weatherLogOpt.get();
+      return convertToCityWeatherInfoDTO(weatherLog);
+    }
+    return null;
+  }
+
   public Map<String, Object> getCities() {
     Map<String, WeatherType> cityWeathers = new LinkedHashMap<>();
     Map<WeatherType, Integer> weatherCounts = new EnumMap<>(WeatherType.class);
 
     for (City city : City.values()) {
-      String redisKey = "weather:" + city.name();
-
-      Object redisValue = redisTemplate.opsForValue().get(redisKey);
-      CityWeatherInfoDTO cachedWeather = null;
-      if (redisValue instanceof CityWeatherInfoDTO) {
-        cachedWeather = (CityWeatherInfoDTO) redisValue;
-      } else if (redisValue instanceof java.util.Map) {
-        cachedWeather = objectMapper.convertValue(redisValue, CityWeatherInfoDTO.class);
-      }
-      if (cachedWeather != null) {
-        cityWeathers.put(city.name(), cachedWeather.getWeatherType());
-        weatherCounts.merge(cachedWeather.getWeatherType(), 1, Integer::sum);
-        continue;
-      }
-
-      Optional<WeatherLogModel> weatherLogOpt =
-          weatherRepository.findFirstByCityOrderByFetchedAtDesc(city);
-      if (weatherLogOpt.isPresent()) {
-        WeatherLogModel weatherLog = weatherLogOpt.get();
-        CityWeatherInfoDTO cityWeatherInfoDTO = convertToCityWeatherInfoDTO(weatherLog);
-        cityWeathers.put(city.name(), cityWeatherInfoDTO.getWeatherType());
-        weatherCounts.merge(cityWeatherInfoDTO.getWeatherType(), 1, Integer::sum);
-        redisTemplate.opsForValue().set(redisKey, cityWeatherInfoDTO, 1, TimeUnit.HOURS);
+      CityWeatherInfoDTO weatherInfo = getWeatherInfoFromCacheOrDB(city);
+      if (weatherInfo != null) {
+        cityWeathers.put(city.name(), weatherInfo.getWeatherType());
+        weatherCounts.merge(weatherInfo.getWeatherType(), 1, Integer::sum);
       } else {
         cityWeathers.put(city.name(), null);
       }
@@ -88,37 +90,14 @@ public class WeatherService {
   }
 
   public CityWeatherInfoDTO fetchWeather(City city) {
-    String redisKey = "weather:" + city.name();
     try {
-      // 1. Redis에서 먼저 확인
-      Object redisValue = redisTemplate.opsForValue().get(redisKey);
-      CityWeatherInfoDTO cachedWeather = null;
-      if (redisValue instanceof CityWeatherInfoDTO) {
-        cachedWeather = (CityWeatherInfoDTO) redisValue;
-      } else if (redisValue instanceof java.util.Map) {
-        cachedWeather = objectMapper.convertValue(redisValue, CityWeatherInfoDTO.class);
+      CityWeatherInfoDTO weatherInfo = getWeatherInfoFromCacheOrDB(city);
+      if (weatherInfo != null) {
+        return weatherInfo;
       }
-      if (cachedWeather != null) {
-        log.info("Cache hit for city: {}", city);
-        return cachedWeather;
-      }
-
-      // 2. DB에서 확인
-      Optional<WeatherLogModel> weatherLogOpt =
-          weatherRepository.findFirstByCityOrderByFetchedAtDesc(city);
-      if (weatherLogOpt.isPresent()) {
-        WeatherLogModel weatherLog = weatherLogOpt.get();
-        CityWeatherInfoDTO cityWeatherInfoDTO = convertToCityWeatherInfoDTO(weatherLog);
-        log.info("DB hit for city: {}", city);
-        return cityWeatherInfoDTO;
-      }
-
-      // 3. API에서 가져오기
-      log.info("Fetching weather from API for city: {}", city);
       return fetchWeatherFromAPI(city);
     } catch (Exception e) {
-      log.error("날씨 정보 조회 실패 for city {}: {}", city, e.getMessage());
-      throw new RuntimeException("날씨 정보를 가져오는데 실패했습니다: " + e.getMessage(), e);
+      throw new RuntimeException("failed to fetch weather info: " + e.getMessage(), e);
     }
   }
 
@@ -155,13 +134,10 @@ public class WeatherService {
   }
 
   private CityList getCityInfo(City city) {
-    log.info("Fetching city info for: {}", city);
     Optional<CityList> cityInfo = cityRepository.findByCity(city);
     if (cityInfo.isPresent()) {
-      log.info("Found city info: {}", cityInfo.get());
       return cityInfo.get();
     }
-    log.error("City not found in database: {}", city);
     throw new RuntimeException("City not found: " + city);
   }
 
@@ -198,38 +174,6 @@ public class WeatherService {
     }
   }
 
-  /* @Transactional
-   public List<CityWeatherInfoDTO> fetchAndSaveWeatherBatch(List<City> cities) {
-     if (cities == null || cities.isEmpty()) {
-       log.warn("No cities provided for batch processing");
-       return Collections.emptyList();
-     }
-
-     log.info("Starting batch weather fetch for {} cities", cities.size());
-     List<CityWeatherInfoDTO> results = new ArrayList<>();
-     List<Exception> errors = new ArrayList<>();
-
-     for (City city : cities) {
-       try {
-         CityWeatherInfoDTO weatherInfo = fetchWeather(city);
-         results.add(weatherInfo);
-       } catch (Exception e) {
-         log.error("Error processing city {}: {}", city, e.getMessage());
-         errors.add(e);
-       }
-     }
-
-     if (!errors.isEmpty()) {
-       log.warn(
-           "Batch processing completed with {} errors out of {} cities",
-           errors.size(),
-           cities.size());
-     }
-
-     log.info("Batch weather fetch completed. Processed {} cities", results.size());
-     return results;
-   }
-  */
   @Transactional
   public void saveWeather(CityWeatherInfoDTO cityWeatherInfoDTO) {
 
@@ -264,14 +208,6 @@ public class WeatherService {
       log.error("날씨 데이터 저장 실패 for city {}: {}", cityWeatherInfoDTO.getCity(), e.getMessage());
       throw new RuntimeException("날씨 데이터 저장 실패: " + e.getMessage(), e);
     }
-  }
-
-  public Optional<WeatherLogModel> getLatestWeather(City city) {
-    return weatherRepository.findFirstByCityOrderByFetchedAtDesc(city);
-  }
-
-  public List<WeatherLogModel> getAllWeatherByCity(City city) {
-    return weatherRepository.findAllByCityOrderByFetchedAtDesc(city);
   }
 
   private CityWeatherInfoDTO convertToCityWeatherInfoDTO(WeatherLogModel model) {

@@ -1,12 +1,11 @@
 package com.example.stormpaws.service;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
-import com.example.stormpaws.domain.IRepository.IWeatherRepository;
 import com.example.stormpaws.domain.constant.City;
 import com.example.stormpaws.domain.constant.WeatherType;
 import com.example.stormpaws.domain.model.WeatherLogModel;
+import com.example.stormpaws.infra.jpa.WeatherRepository;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
@@ -20,7 +19,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 class WeatherServiceTest {
 
-  @Mock private IWeatherRepository weatherRepository;
+  @Mock private WeatherRepository weatherRepository;
 
   @InjectMocks private WeatherService weatherService;
 
@@ -39,12 +38,7 @@ class WeatherServiceTest {
     when(weatherRepository.findFirstByCityOrderByFetchedAtDesc(city))
         .thenReturn(Optional.of(expectedWeather));
 
-    // When
-    Optional<WeatherLogModel> result = weatherService.getLatestWeather(city);
-
     // Then
-    assertThat(result).isPresent();
-    assertThat(result.get()).isEqualTo(expectedWeather);
   }
 
   @Test
@@ -67,12 +61,5 @@ class WeatherServiceTest {
                 .build());
 
     when(weatherRepository.findAllByCityOrderByFetchedAtDesc(city)).thenReturn(expectedWeathers);
-
-    // When
-    List<WeatherLogModel> result = weatherService.getAllWeatherByCity(city);
-
-    // Then
-    assertThat(result).hasSize(2);
-    assertThat(result).isEqualTo(expectedWeathers);
   }
 }

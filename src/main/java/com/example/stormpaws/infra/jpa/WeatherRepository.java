@@ -1,4 +1,4 @@
-package com.example.stormpaws.domain.IRepository;
+package com.example.stormpaws.infra.jpa;
 
 import com.example.stormpaws.domain.constant.City;
 import com.example.stormpaws.domain.model.WeatherLogModel;
@@ -8,7 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface IWeatherRepository extends JpaRepository<WeatherLogModel, String> {
+public interface WeatherRepository extends JpaRepository<WeatherLogModel, String> {
   Optional<WeatherLogModel> findFirstByCityOrderByFetchedAtDesc(City city);
 
   List<WeatherLogModel> findAllByCityOrderByFetchedAtDesc(City city);

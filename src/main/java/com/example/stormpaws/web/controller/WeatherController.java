@@ -38,4 +38,13 @@ public class WeatherController {
     weatherService.saveWeather(weatherInfo);
     return ResponseEntity.ok(weatherInfo);
   }
+
+  /* @GetMapping("/random")
+  public ResponseEntity<CityWeatherInfoDTO> getRandomWeather() {
+    City city = City.values()[new Random().nextInt(City.values().length)];
+    CityWeatherInfoDTO weatherInfo = weatherService.fetchWeather(city);
+    weatherService.saveWeather(weatherInfo);
+    return ResponseEntity.ok(weatherInfo);
+  } */
+
 }

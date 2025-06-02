@@ -4,6 +4,7 @@ import com.example.stormpaws.domain.constant.City;
 import com.example.stormpaws.service.WeatherService;
 import com.example.stormpaws.service.dto.CityWeatherInfoDTO;
 import java.util.Map;
+import java.util.concurrent.ThreadLocalRandom;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,13 +22,6 @@ public class WeatherController {
   @GetMapping("/cities")
   public ResponseEntity<Map<String, Object>> getCities() {
     Map<String, Object> result = weatherService.getCities();
-    if (result != null
-        && result.containsKey("cityWeathers")
-        && result.get("cityWeathers") instanceof Map) {
-      log.info(
-          "Returning weather summary with {} cities",
-          ((Map<?, ?>) result.get("cityWeathers")).size());
-    }
     return ResponseEntity.ok(result);
   }
 
@@ -35,16 +29,13 @@ public class WeatherController {
   @GetMapping("/{city}")
   public ResponseEntity<CityWeatherInfoDTO> getWeather(@PathVariable("city") City city) {
     CityWeatherInfoDTO weatherInfo = weatherService.fetchWeather(city);
-    weatherService.saveWeather(weatherInfo);
     return ResponseEntity.ok(weatherInfo);
   }
 
-  /* @GetMapping("/random")
+  @GetMapping("/random")
   public ResponseEntity<CityWeatherInfoDTO> getRandomWeather() {
-    City city = City.values()[new Random().nextInt(City.values().length)];
+    City city = City.values()[ThreadLocalRandom.current().nextInt(City.values().length)];
     CityWeatherInfoDTO weatherInfo = weatherService.fetchWeather(city);
-    weatherService.saveWeather(weatherInfo);
     return ResponseEntity.ok(weatherInfo);
-  } */
-
+  }
 }

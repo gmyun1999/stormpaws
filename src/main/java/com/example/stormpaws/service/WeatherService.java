@@ -36,7 +36,7 @@ public class WeatherService {
   private static final String OPEN_METEO_URL = "https://api.open-meteo.com/v1/forecast";
   private static final int MAX_RETRIES = 3;
   private static final long RETRY_DELAY_MS = 1000;
-  private static final long CACHE_EXPIRATION_HOURS = 1;
+  private static final long CACHE_EXPIRATION_HOURS = 24;
 
   private CityWeatherInfoDTO getWeatherInfoFromCacheOrDB(City city) {
     String redisKey = "weather:" + city.name();
@@ -101,7 +101,7 @@ public class WeatherService {
     }
   }
 
-  private CityWeatherInfoDTO fetchWeatherFromAPI(City city) {
+  public CityWeatherInfoDTO fetchWeatherFromAPI(City city) {
     int retryCount = 0;
     while (retryCount < MAX_RETRIES) {
       try {

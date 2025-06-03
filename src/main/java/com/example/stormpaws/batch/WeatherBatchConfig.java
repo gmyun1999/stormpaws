@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.Map;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
-import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
 import org.springframework.batch.core.job.builder.JobBuilder;
 import org.springframework.batch.core.partition.support.Partitioner;
 import org.springframework.batch.core.partition.support.SimplePartitioner;
@@ -24,7 +23,6 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.transaction.PlatformTransactionManager;
 
 @Configuration
-@EnableBatchProcessing
 public class WeatherBatchConfig {
 
   @Bean
@@ -53,7 +51,6 @@ public class WeatherBatchConfig {
         .partitioner("workerStep", partitioner())
         .step(
             workerStep(jobRepository, transactionManager, reader, processor, writer, taskExecutor))
-        .taskExecutor(taskExecutor)
         .build();
   }
 

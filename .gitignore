@@ -50,3 +50,5 @@ target/
 
 .idea/modules.xml
 .idea/**/workspace.xml
+
+*.properties

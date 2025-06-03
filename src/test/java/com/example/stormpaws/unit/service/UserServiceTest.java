@@ -26,7 +26,7 @@
 
 //   @Mock private OAuthProviderFactory oauthProviderFactory;
 
-//   @Mock private UserRepository userRepository;
+  // @Mock private IUserRepository userRepository;
 
 //   @Mock private ITokenProvider tokenProvider;
 

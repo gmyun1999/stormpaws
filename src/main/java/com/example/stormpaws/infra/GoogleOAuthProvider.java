@@ -58,16 +58,18 @@ public class GoogleOAuthProvider implements IOAuthProvider {
       return (String)
           Objects.requireNonNull(response.getBody(), "Token response body is null")
               .get("access_token");
+
     } catch (HttpClientErrorException | HttpServerErrorException e) {
-      // 응답 본문
+      // Google API에서 반환한 응답 본문을 가져오기
       String errorResponse = e.getResponseBodyAsString();
+
+      // 상세 오류 로그 추가
       System.err.println("Google OAuth token request failed: " + errorResponse);
 
-      // 예외 객체의 상세 메시지 및 스택 트레이스도 같이 출력
-      System.err.println("Exception message: " + e.getMessage());
-      e.printStackTrace();
-
+      // OAuthException에 오류 메시지와 응답 본문 전달
       throw new OAuthException("Google OAuth 토큰 발급 실패", errorResponse);
+    } catch (Exception e) {
+      throw new OAuthException("Google OAuth 토큰 발급 실패", e);
     }
   }
 

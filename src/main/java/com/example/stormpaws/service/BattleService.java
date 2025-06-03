@@ -4,6 +4,7 @@ import com.example.stormpaws.domain.IRepository.IBattleParticipantRepository;
 import com.example.stormpaws.domain.IRepository.IBattleRepository;
 import com.example.stormpaws.domain.IRepository.IDeckRepository;
 import com.example.stormpaws.domain.IRepository.IUserRepository;
+import com.example.stormpaws.domain.IRepository.IWeatherRepository;
 import com.example.stormpaws.domain.constant.BattleResult;
 import com.example.stormpaws.domain.constant.BattleType;
 import com.example.stormpaws.domain.constant.WeatherType;
@@ -24,30 +25,34 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class BattleService {
 
   private final IDeckRepository deckRepo;
-  private final BattleSimulator simulator;
   private final IBattleRepository battleRepo;
   private final IBattleParticipantRepository battleParticipantRepo;
-  private final ObjectMapper objectMapper;
   private final IUserRepository userRepo;
+  private final IWeatherRepository weatherLogRepo;
+  private final BattleSimulator simulator;
+  private final ObjectMapper objectMapper;
 
   public BattleService(
       IDeckRepository deckRepo,
-      BattleSimulator simulator,
       IBattleRepository battleRepo,
       IBattleParticipantRepository battleParticipantRepo,
-      ObjectMapper objectMapper,
-      IUserRepository userRepo) {
+      IUserRepository userRepo,
+      IWeatherRepository weatherLogRepo,
+      BattleSimulator simulator,
+      ObjectMapper objectMapper) {
     this.deckRepo = deckRepo;
-    this.simulator = simulator;
     this.battleRepo = battleRepo;
     this.battleParticipantRepo = battleParticipantRepo;
-    this.objectMapper = objectMapper;
     this.userRepo = userRepo;
+    this.weatherLogRepo = weatherLogRepo;
+    this.simulator = simulator;
+    this.objectMapper = objectMapper;
   }
 
   /**
@@ -58,49 +63,43 @@ public class BattleService {
    * @param defenderUserId 수비자 유저 ID
    * @param defenderDeckId 수비자 덱 ID
    * @param weatherLogId 날씨 로그 ID
+   * @param battleType 배틀 타입
    * @return BattleResultDTO 시뮬레이션 결과 DTO
    */
-  // @Transactional
-  // public BattleResultDTO startPVPBattle(
-  //         String attackerUserId,
-  //         String attackerDeckId,
-  //         String defenderUserId,
-  //         String defenderDeckId,
-  //         String weatherLogId,
-  //         BattleType battleType
-  // ) {
+  @Transactional
+  public BattleResultDTO startPVPBattle(
+      String attackerUserId,
+      String attackerDeckId,
+      String defenderUserId,
+      String defenderDeckId,
+      String weatherLogId,
+      BattleType battleType) {
+    WeatherLogModel weatherLog =
+        weatherLogRepo
+            .findById(weatherLogId)
+            .orElseThrow(
+                () -> new IllegalArgumentException("유효하지 않은 WeatherLog ID: " + weatherLogId));
 
-  // WeatherLogModel weatherLog = weatherLogRepo.findById(weatherLogId)
-  //         .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 WeatherLog ID: " +
-  // weatherLogId));
+    BattleResultDTO resultDTO =
+        runSimulation(attackerDeckId, defenderDeckId, weatherLog.getWeatherType());
 
-  // BattleResultDTO resultDTO = runSimulation(
-  //         attackerDeckId,
-  //         defenderDeckId,
-  //         weatherLog.getWeatherType()
-  // );
+    LocalDateTime now = LocalDateTime.now();
+    String eventLogJson = toJson(resultDTO);
 
-  // LocalDateTime startAt = LocalDateTime.now();
-  // LocalDateTime endAt = LocalDateTime.now();
-  // String eventLogJson = toJson(resultDTO);
+    BattleModel battle = saveBattle(weatherLog, now, now, eventLogJson, battleType);
 
-  // BattleModel battle = SaveBattle(
-  //   weatherLog,
-  //   startAt,
-  //   endAt,
-  //   eventLogJson,
-  //   BattleType.asyncPvp1v1
-  // );
+    List<BattleParticipant> participants =
+        buildParticipants(
+            battle,
+            attackerUserId,
+            attackerDeckId,
+            defenderUserId,
+            defenderDeckId,
+            resultDTO.winnerDeckId());
+    saveParticipants(participants);
 
-  // saveParticipants(buildParticipants(
-  //     battle,
-  //     attackerUserId, attackerDeckId,
-  //     defenderUserId, defenderDeckId,
-  //     resultDTO.winnerDeckId()
-  // ));
-
-  // return resultDTO;
-  // }
+    return resultDTO;
+  }
 
   private List<BattleParticipant> buildParticipants(
       BattleModel battle,
@@ -152,7 +151,7 @@ public class BattleService {
     }
   }
 
-  private BattleModel SaveBattle(
+  private BattleModel saveBattle(
       WeatherLogModel weatherLog,
       LocalDateTime startAt,
       LocalDateTime endAt,
@@ -171,7 +170,6 @@ public class BattleService {
   }
 
   private void saveParticipants(List<BattleParticipant> participants) {
-
     for (BattleParticipant p : participants) {
       battleParticipantRepo.save(p);
     }
@@ -183,7 +181,6 @@ public class BattleService {
         deckRepo
             .findByIdWithDeckCardsAndCards(attackerDeckId)
             .orElseThrow(() -> new IllegalArgumentException("Invalid deck ID: " + attackerDeckId));
-
     DeckModel bDeck =
         deckRepo
             .findByIdWithDeckCardsAndCards(defenderDeckId)
@@ -195,13 +192,13 @@ public class BattleService {
     return simulator.simulate(attackerDeckId, attackers, defenderDeckId, defenders);
   }
 
+  // battle에 쓰이는 배틀 전용 유닛 리스트 생성
   private List<Unit> toUnits(DeckModel deck, WeatherType weather) {
     var cards = new ArrayList<>(deck.getDecklist());
     cards.sort(Comparator.comparingInt(DeckCardModel::getPos));
 
     List<Unit> units = new ArrayList<>();
-
-    for (var dc : cards) {
+    for (DeckCardModel dc : cards) {
       CardModel card = dc.getCard();
       int baseAttack = card.getAttackPower();
       boolean match = card.getCardType().equalsIgnoreCase(weather.name());
@@ -211,7 +208,6 @@ public class BattleService {
         units.add(new Unit(card.getId(), card.getHealth(), effectiveAttack, card.getAttackSpeed()));
       }
     }
-
     return units;
   }
 }

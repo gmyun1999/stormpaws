@@ -1,11 +1,11 @@
 package com.example.stormpaws.service;
 
+import com.example.stormpaws.domain.IRepository.ICityRepository;
+import com.example.stormpaws.domain.IRepository.IWeatherRepository;
 import com.example.stormpaws.domain.constant.City;
 import com.example.stormpaws.domain.constant.WeatherType;
 import com.example.stormpaws.domain.model.CityList;
 import com.example.stormpaws.domain.model.WeatherLogModel;
-import com.example.stormpaws.infra.jpa.CityRepository;
-import com.example.stormpaws.infra.jpa.WeatherRepository;
 import com.example.stormpaws.service.dto.CityWeatherInfoDTO;
 import com.example.stormpaws.web.dto.response.OpenMeteoWeatherResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -28,8 +28,8 @@ import org.springframework.web.client.RestTemplate;
 @Service
 @RequiredArgsConstructor
 public class WeatherService {
-  private final WeatherRepository weatherRepository;
-  private final CityRepository cityRepository;
+  private final IWeatherRepository weatherRepository;
+  private final ICityRepository cityRepository;
   private final RestTemplate restTemplate;
   private final RedisTemplate<String, Object> redisTemplate;
   private final ObjectMapper objectMapper;

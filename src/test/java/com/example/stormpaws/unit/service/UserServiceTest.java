@@ -4,8 +4,8 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
+import com.example.stormpaws.domain.IRepository.IUserRepository;
 import com.example.stormpaws.domain.model.UserModel;
-import com.example.stormpaws.infra.jpa.UserRepository;
 import com.example.stormpaws.service.OAuth.IOAuthProvider;
 import com.example.stormpaws.service.OAuth.OAuthProviderFactory;
 import com.example.stormpaws.service.UserService;
@@ -26,7 +26,7 @@ class UserServiceTest {
 
   @Mock private OAuthProviderFactory oauthProviderFactory;
 
-  @Mock private UserRepository userRepository;
+  @Mock private IUserRepository userRepository;
 
   @Mock private ITokenProvider tokenProvider;
 

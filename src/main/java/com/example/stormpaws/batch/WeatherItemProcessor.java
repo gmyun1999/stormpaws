@@ -30,7 +30,7 @@ public class WeatherItemProcessor implements ItemProcessor<List<City>, List<City
 
     for (City city : cities) {
       try {
-        CityWeatherInfoDTO weatherInfo = weatherService.fetchWeather(city);
+        CityWeatherInfoDTO weatherInfo = weatherService.fetchWeatherFromAPI(city);
         if (weatherInfo != null) {
           results.add(weatherInfo);
         }

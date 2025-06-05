@@ -12,4 +12,6 @@ public interface IWeatherRepository {
   List<WeatherLogModel> findAllByCityOrderByFetchedAtDesc(City city);
 
   <S extends WeatherLogModel> S save(S entity);
+
+  Optional<WeatherLogModel> findById(String id);
 }

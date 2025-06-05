@@ -1,7 +1,6 @@
 package com.example.stormpaws.domain.model;
 
 import com.example.stormpaws.domain.constant.BattleType;
-import com.example.stormpaws.domain.constant.City;
 import jakarta.persistence.Column;
 import jakarta.persistence.ConstraintMode;
 import jakarta.persistence.Entity;
@@ -44,10 +43,6 @@ public class BattleModel {
       nullable = false,
       foreignKey = @ForeignKey(value = ConstraintMode.NO_CONSTRAINT))
   private WeatherLogModel weatherLog;
-
-  @Enumerated(EnumType.STRING)
-  @Column(name = "city", nullable = false)
-  private City city;
 
   @Column(name = "battle_event_log", columnDefinition = "json", nullable = false)
   private String battleEventLog;

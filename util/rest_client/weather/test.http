@@ -1,0 +1,5 @@
+GET {{stormpaw-host}}/api/weather/fetch
+Content-Type: application/json
+
+
+# access 토큰 만료시 새로운 access 토큰을 발급해줍니다.

@@ -72,16 +72,10 @@ public class BattleService {
       String attackerDeckId,
       String defenderUserId,
       String defenderDeckId,
-      String weatherLogId,
+      WeatherType weatherType,
       BattleType battleType) {
-    WeatherLogModel weatherLog =
-        weatherLogRepo
-            .findById(weatherLogId)
-            .orElseThrow(
-                () -> new IllegalArgumentException("유효하지 않은 WeatherLog ID: " + weatherLogId));
 
-    BattleResultDTO resultDTO =
-        runSimulation(attackerDeckId, defenderDeckId, weatherLog.getWeatherType());
+    BattleResultDTO resultDTO = runSimulation(attackerDeckId, defenderDeckId, weatherType);
 
     LocalDateTime now = LocalDateTime.now();
     String eventLogJson = toJson(resultDTO);

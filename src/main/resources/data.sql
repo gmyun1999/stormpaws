@@ -1,6 +1,3 @@
-/* -- 기존 데이터 삭제
-TRUNCATE TABLE weather_log_model;
-TRUNCATE TABLE cities; */
 
 -- 도시 데이터 삽입
 INSERT INTO cities (id, city, latitude, longitude) VALUES

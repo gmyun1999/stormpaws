@@ -3,8 +3,8 @@ package com.example.stormpaws.infra.OpenMeteo;
 import com.example.stormpaws.domain.constant.WeatherType;
 import com.example.stormpaws.domain.model.CityModel;
 import com.example.stormpaws.domain.model.WeatherLogModel;
+import com.example.stormpaws.infra.OpenMeteo.responseDTO.OpenMeteoBulkWeatherResponse;
 import com.example.stormpaws.infra.OpenMeteo.responseDTO.OpenMeteoCurrentWeather;
-import com.example.stormpaws.infra.OpenMeteo.responseDTO.OpenMeteoWeatherResponse;
 import com.example.stormpaws.service.weatherAPI.WeatherApiClient;
 import java.net.URI;
 import java.time.LocalDateTime;
@@ -12,6 +12,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
@@ -41,39 +43,36 @@ public class OpenMeteoWeatherApiClient implements WeatherApiClient {
             "%s?latitude=%s&longitude=%s&current_weather=true",
             OPEN_METEO_URL, latitudes, longitudes);
 
-    ResponseEntity<String> rawResponseEntity =
-        restTemplate.getForEntity(URI.create(url), String.class);
-    System.out.println("=== OpenMeteo API 응답 ===");
-    System.out.println(rawResponseEntity.getBody());
+    ResponseEntity<List<OpenMeteoBulkWeatherResponse>> responseEntity =
+        restTemplate.exchange(
+            URI.create(url),
+            HttpMethod.GET,
+            null,
+            new ParameterizedTypeReference<List<OpenMeteoBulkWeatherResponse>>() {});
 
-    ResponseEntity<OpenMeteoWeatherResponse> responseEntity =
-        restTemplate.getForEntity(URI.create(url), OpenMeteoWeatherResponse.class);
-
-    OpenMeteoWeatherResponse response = responseEntity.getBody();
-
-    if (response == null || response.getCurrentWeather() == null) {
+    List<OpenMeteoBulkWeatherResponse> bulkResponse = responseEntity.getBody();
+    if (bulkResponse == null || bulkResponse.isEmpty()) {
       return new ArrayList<>();
     }
 
-    List<OpenMeteoCurrentWeather> infraList = response.getCurrentWeather();
     List<WeatherLogModel> result = new ArrayList<>();
-
-    for (int i = 0; i < infraList.size(); i++) {
-      OpenMeteoCurrentWeather cw = infraList.get(i);
+    for (int i = 0; i < bulkResponse.size(); i++) {
+      OpenMeteoBulkWeatherResponse entry = bulkResponse.get(i);
+      OpenMeteoCurrentWeather cw = entry.getCurrentWeather();
       CityModel cityModel = cityInfos.get(i);
+
+      if (cw == null) continue;
 
       WeatherType weatherType = mapToWeatherType(cw.getWeatherCode());
       LocalDateTime fetchedAt = LocalDateTime.parse(cw.getTime());
 
-      WeatherLogModel model =
+      result.add(
           WeatherLogModel.builder()
               .id(UUID.randomUUID().toString())
               .city(cityModel.getCity())
               .weatherType(weatherType)
               .fetchedAt(fetchedAt)
-              .build();
-
-      result.add(model);
+              .build());
     }
 
     return result;

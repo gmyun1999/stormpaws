@@ -12,4 +12,8 @@ public interface ICityRepository {
   <S extends CityModel> S save(S entity);
 
   List<CityModel> findAll();
+
+  List<String> findAllCityIds();
+
+  Optional<CityModel> findById(String id);
 }

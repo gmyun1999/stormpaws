@@ -1,0 +1,10 @@
+POST {{stormpaw-host}}/battles/pvp
+Content-Type: application/json
+
+{
+  "attackerDeckId": "0161aeea-b1d8-4244-9f1d-a5d942f84d91",
+  "attackerUserId": "f0c1b8d2-3a4e-4c5b-9f6d-7e8b9c0d1e2f",
+  "defenderUserId": "a1b2c3d4-e5f6-7g8h-9i0j-k1l2m3n4o5p6",
+  "defenderDeckId": "09e52342-6f68-4f03-ba3b-a88e2d1136f5",
+  "weatherLogId": "12345678-1234-1234-1234-123456789012"
+}

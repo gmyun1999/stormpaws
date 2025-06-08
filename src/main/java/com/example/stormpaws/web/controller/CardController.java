@@ -28,7 +28,7 @@ public class CardController {
       @RequestParam(defaultValue = "1") int page, @RequestParam(defaultValue = "10") int size) {
 
     // CardService의 새로운 메소드 호출 (List와 Paginator 사용)
-    PagedResultDTO<CardModel> cardList = cardService.getCardList(page, size);
+    PagedResultDTO<CardModel> cardList = cardService.getPagedCardList(page, size);
     ApiResponse<PagedResultDTO<CardModel>> response = new ApiResponse<>(true, "success", cardList);
     return ResponseEntity.ok(response);
   }

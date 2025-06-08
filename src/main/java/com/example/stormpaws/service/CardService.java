@@ -23,9 +23,13 @@ public class CardService {
         () -> new IllegalArgumentException("Card not found with id: " + cardId));
   }
 
-  public PagedResultDTO<CardModel> getCardList(int page, int size) {
+  public PagedResultDTO<CardModel> getPagedCardList(int page, int size) {
     List<CardModel> allCards = cardRepository.findAll();
     return Paginator.paginate(allCards, page, size);
+  }
+
+  public List<CardModel> getAllCards() {
+    return cardRepository.findAll();
   }
 
   public List<CardModel> findCardsByIds(List<String> cardIds) {

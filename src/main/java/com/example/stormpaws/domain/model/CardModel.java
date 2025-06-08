@@ -42,5 +42,5 @@ public class CardModel {
   private String cardType;
 
   @Column(name = "추가계수", nullable = false)
-  private int additionalCoefficient;
+  private float additionalCoefficient;
 }

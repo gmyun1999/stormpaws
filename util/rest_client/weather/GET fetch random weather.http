@@ -1,0 +1,2 @@
+GET {{stormpaw-host}}/weather/random
+Content-Type: application/json

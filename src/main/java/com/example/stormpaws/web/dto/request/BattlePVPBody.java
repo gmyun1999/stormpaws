@@ -1,6 +1,5 @@
 package com.example.stormpaws.web.dto.request;
 
-import com.example.stormpaws.domain.constant.WeatherType;
 import jakarta.validation.constraints.NotNull;
 
 public record BattlePVPBody(
@@ -8,4 +7,4 @@ public record BattlePVPBody(
     @NotNull String attackerUserId,
     @NotNull String defenderUserId,
     @NotNull String defenderDeckId,
-    @NotNull WeatherType weatherType) {}
+    @NotNull String weatherLogId) {}

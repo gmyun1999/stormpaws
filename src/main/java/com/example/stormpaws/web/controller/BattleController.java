@@ -1,7 +1,6 @@
 package com.example.stormpaws.web.controller;
 
 import com.example.stormpaws.domain.constant.BattleType;
-import com.example.stormpaws.domain.constant.WeatherType;
 import com.example.stormpaws.domain.model.DeckModel;
 import com.example.stormpaws.domain.model.UserModel;
 import com.example.stormpaws.service.BattleService;
@@ -40,7 +39,7 @@ public class BattleController {
     String defenderDeckId = requestDTO.defenderDeckId();
     String attackerUserId = requestDTO.attackerUserId();
     String defenderUserId = requestDTO.defenderUserId();
-    WeatherType weatherType = requestDTO.weatherType();
+    String weatherLogId = requestDTO.weatherLogId();
 
     BattleResultDTO result =
         battleService.startPVPBattle(
@@ -48,7 +47,7 @@ public class BattleController {
             attackerDeckId,
             defenderUserId,
             defenderDeckId,
-            weatherType,
+            weatherLogId,
             BattleType.asyncPvp1v1);
 
     ApiResponse<BattleResultDTO> response = new ApiResponse<>(true, "success", result);
@@ -60,7 +59,7 @@ public class BattleController {
       @Valid @RequestBody BattleComputerPVPBody requestDTO) {
     String attackerDeckId = requestDTO.attackerDeckId();
     String attackerUserId = requestDTO.attackerUserId();
-    WeatherType weatherType = requestDTO.weatherType();
+    String weatherLogId = requestDTO.weatherLogId();
 
     UserModel computerUser = systemUserService.getSystemUser();
     DeckModel computerDeck = deckService.getRandomDeckForUser(computerUser.getId());
@@ -73,7 +72,7 @@ public class BattleController {
             attackerDeckId,
             defenderUserId,
             defenderDeckId,
-            weatherType,
+            weatherLogId,
             BattleType.computerPvp1v1);
 
     ApiResponse<BattleResultDTO> response = new ApiResponse<>(true, "success", result);

@@ -1,0 +1,3 @@
+GET {{stormpaw-host}}/api/weather/fetch
+Content-Type: application/json
+Authorization: Bearer {{stormpaw-jwt}}

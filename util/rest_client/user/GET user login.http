@@ -1,2 +1,2 @@
-GET {{stormpaw-host}}/user/login/google?code=123
+GET http://127.0.0.1:8080/user/issue
 Content-Type: application/json

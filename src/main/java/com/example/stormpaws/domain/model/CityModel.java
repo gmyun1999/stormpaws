@@ -15,7 +15,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class CityList {
+public class CityModel {
   @Id private String id;
 
   @Enumerated(EnumType.STRING)

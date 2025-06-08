@@ -13,5 +13,7 @@ public interface IWeatherRepository {
 
   <S extends WeatherLogModel> S save(S entity);
 
+  <S extends WeatherLogModel> List<S> saveAll(Iterable<S> entities);
+
   Optional<WeatherLogModel> findById(String id);
 }

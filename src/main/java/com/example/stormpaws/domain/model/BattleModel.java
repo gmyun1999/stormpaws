@@ -16,6 +16,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 @Getter
 @Builder
@@ -44,6 +46,7 @@ public class BattleModel {
       foreignKey = @ForeignKey(value = ConstraintMode.NO_CONSTRAINT))
   private WeatherLogModel weatherLog;
 
+  @JdbcTypeCode(SqlTypes.JSON)
   @Column(name = "battle_event_log", columnDefinition = "json", nullable = false)
   private String battleEventLog;
 }

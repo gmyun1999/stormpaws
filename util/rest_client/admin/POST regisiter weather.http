@@ -1,3 +1,3 @@
-GET {{stormpaw-host}}/weather/initialize
+POST {{stormpaw-host}}admin/weather/initialize
 Content-Type: application/json
 Authorization: Bearer {{stormpaw-jwt}}

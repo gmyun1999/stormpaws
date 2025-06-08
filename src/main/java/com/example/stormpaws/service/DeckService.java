@@ -47,6 +47,7 @@ public class DeckService {
   }
 
   public DeckModel createDeck(DeckCardDTO deckCardDTO, UserModel user) {
+    // 덱 + 덱카드 데이터 생성 후 저장
 
     List<String> cardIds = new ArrayList<>();
     for (DeckCardDTO.CardDTO cardDTO : deckCardDTO.cards()) {
@@ -95,7 +96,15 @@ public class DeckService {
     return deckModel;
   }
 
-  public PagedResultDTO<DeckModel> getRandomDecks(int count, UserModel user) {
+  public DeckModel getRandomDeckForUser(String userId) {
+    List<DeckModel> decks = deckRepository.findByUserIdWithDeckCardsAndCards(userId);
+    if (decks.isEmpty()) {
+      throw new IllegalArgumentException("User " + userId + " has no decks");
+    }
+    return decks.get(ThreadLocalRandom.current().nextInt(decks.size()));
+  }
+
+  public PagedResultDTO<DeckModel> getRandomDecksWithoutUser(int count, UserModel user) {
     // 1) 덱 보유 유저 ID 조회 + 현 유저 제외 + 랜덤 n명 선택
     List<String> userIds = deckRepository.findAllUserIdsWithDecks();
     userIds.remove(user.getId());

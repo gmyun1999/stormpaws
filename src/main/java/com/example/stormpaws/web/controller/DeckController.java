@@ -74,7 +74,8 @@ public class DeckController {
       @Valid @ModelAttribute RandomDeckQueryParam param,
       @AuthenticationPrincipal CustomUserDetails userDetails) {
     int count = param.resolvedCount();
-    PagedResultDTO<DeckModel> result = deckService.getRandomDecks(count, userDetails.getUser());
+    PagedResultDTO<DeckModel> result =
+        deckService.getRandomDecksWithoutUser(count, userDetails.getUser());
     ApiResponse<PagedResultDTO<DeckModel>> response = new ApiResponse<>(true, "success", result);
     return ResponseEntity.ok(response);
   }

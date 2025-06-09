@@ -62,7 +62,7 @@ public class BattleController {
   }
 
   @PreAuthorize("isAuthenticated()")
-  @GetMapping("/my-records")
+  @GetMapping("/records/me")
   public ResponseEntity<ApiResponse<PagedResultDTO<BattleRecordResponseDTO>>> getMyRecords(
       @AuthenticationPrincipal CustomUserDetails userDetails,
       @RequestParam(defaultValue = "1") int page,

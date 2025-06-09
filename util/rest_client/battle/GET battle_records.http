@@ -1,0 +1,3 @@
+GET {{stormpaw-host}}/battles/records/me
+Content-Type: application/json
+Authorization: Bearer {{stormpaw-jwt}}

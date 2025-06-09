@@ -16,13 +16,18 @@ import com.example.stormpaws.domain.model.DeckModel;
 import com.example.stormpaws.domain.model.UserModel;
 import com.example.stormpaws.domain.model.WeatherLogModel;
 import com.example.stormpaws.service.BattleSimulator.Unit;
+import com.example.stormpaws.service.dto.BattleRecordResponseDTO;
 import com.example.stormpaws.service.dto.BattleResultDTO;
+import com.example.stormpaws.service.dto.PagedResultDTO;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -83,8 +88,16 @@ public class BattleService {
     BattleResultDTO resultDTO =
         runSimulation(attackerDeckId, defenderDeckId, weatherLog.getWeatherType());
 
+    Map<String, Object> eventLogData = new HashMap<>();
+    eventLogData.put("attackerDeckId", attackerDeckId);
+    eventLogData.put("defenderDeckId", defenderDeckId);
+    eventLogData.put("weather", weatherLog.getWeatherType().name());
+    eventLogData.put("winnerDeckId", resultDTO.winnerDeckId());
+    eventLogData.put("logs", resultDTO.logs());
+
+    String eventLogJson = toJson(eventLogData);
+
     LocalDateTime now = LocalDateTime.now();
-    String eventLogJson = toJson(resultDTO);
 
     BattleModel battle = saveBattle(weatherLog, now, now, eventLogJson, battleType);
 
@@ -143,7 +156,7 @@ public class BattleService {
     return List.of(attacker, defender);
   }
 
-  private String toJson(BattleResultDTO dto) {
+  private String toJson(Map<String, Object> dto) {
     try {
       return objectMapper.writeValueAsString(dto);
     } catch (JsonProcessingException e) {
@@ -209,5 +222,52 @@ public class BattleService {
       }
     }
     return units;
+  }
+
+  public PagedResultDTO<BattleRecordResponseDTO> getMyRecordList(
+      UserModel user, int page, int size) {
+    List<BattleParticipant> myParticipants = battleParticipantRepo.findByUser(user);
+    List<BattleRecordResponseDTO> result = new ArrayList<>();
+
+    for (BattleParticipant myPart : myParticipants) {
+      BattleModel battle = myPart.getBattle();
+      BattleResult battleResult = myPart.getBattleResult();
+
+      // battleEventLog에서 내 덱 id, 상대 덱 id, 날씨 정보 추출 (파싱 필요)
+      Map<String, Object> log = parseBattleEventLog(battle.getBattleEventLog());
+      String myDeckId = (String) log.get("attackerDeckId");
+      String opponentDeckId = (String) log.get("defenderDeckId");
+      WeatherType weather = WeatherType.valueOf((String) log.get("weather"));
+
+      // 상대 덱 id로 DeckModel 조회 → 상대 userId 추출
+      DeckModel opponentDeck = deckRepo.findByIdWithDeckCardsAndCards(opponentDeckId).orElse(null);
+      String opponentUserId =
+          (opponentDeck != null && opponentDeck.getUser() != null)
+              ? opponentDeck.getUser().getId()
+              : null;
+
+      // 내 덱 정보 조회
+      DeckModel myDeck = deckRepo.findByIdWithDeckCardsAndCards(myDeckId).orElse(null);
+
+      // DTO 조합
+      BattleRecordResponseDTO dto = new BattleRecordResponseDTO();
+      dto.setResult(battleResult);
+      dto.setOpponentUserId(opponentUserId);
+      dto.setOpponentDeck(opponentDeck);
+      dto.setMyDeck(myDeck);
+      dto.setWeather(weather);
+
+      result.add(dto);
+    }
+    return Paginator.paginate(result, page, size);
+  }
+
+  // battleEventLog 파싱 메서드는 실제 구조에 맞게 구현 필요
+  private Map<String, Object> parseBattleEventLog(String eventLogJson) {
+    try {
+      return objectMapper.readValue(eventLogJson, new TypeReference<Map<String, Object>>() {});
+    } catch (JsonProcessingException e) {
+      throw new RuntimeException("BattleEventLog JSON 파싱 실패", e);
+    }
   }
 }

@@ -1,12 +1,16 @@
 package com.example.stormpaws.web.controller;
 
 import com.example.stormpaws.domain.constant.BattleType;
+import com.example.stormpaws.domain.model.DeckModel;
 import com.example.stormpaws.domain.model.UserModel;
 import com.example.stormpaws.infra.security.CustomUserDetails;
 import com.example.stormpaws.service.BattleService;
+import com.example.stormpaws.service.DeckService;
+import com.example.stormpaws.service.SystemUserService;
 import com.example.stormpaws.service.dto.BattleRecordResponseDTO;
 import com.example.stormpaws.service.dto.BattleResultDTO;
 import com.example.stormpaws.service.dto.PagedResultDTO;
+import com.example.stormpaws.web.dto.request.BattleComputerPVPBody;
 import com.example.stormpaws.web.dto.request.BattlePVPBody;
 import com.example.stormpaws.web.dto.response.ApiResponse;
 import jakarta.validation.Valid;
@@ -25,9 +29,14 @@ import org.springframework.web.bind.annotation.RestController;
 public class BattleController {
 
   private final BattleService battleService;
+  private final DeckService deckService;
+  private final SystemUserService systemUserService;
 
-  public BattleController(BattleService battleService) {
+  public BattleController(
+      BattleService battleService, DeckService deckService, SystemUserService systemUserService) {
     this.battleService = battleService;
+    this.deckService = deckService;
+    this.systemUserService = systemUserService;
   }
 
   @PostMapping("/pvp")
@@ -63,5 +72,30 @@ public class BattleController {
     PagedResultDTO<BattleRecordResponseDTO> recordList =
         battleService.getMyRecordList(user, page, size);
     return ResponseEntity.ok(new ApiResponse<>(true, "success", recordList));
+  }
+
+  @PostMapping("/pvp/computer/random")
+  public ResponseEntity<ApiResponse<BattleResultDTO>> simulateComputerPvp(
+      @Valid @RequestBody BattleComputerPVPBody requestDTO) {
+    String attackerDeckId = requestDTO.attackerDeckId();
+    String attackerUserId = requestDTO.attackerUserId();
+    String weatherLogId = requestDTO.weatherLogId();
+
+    UserModel computerUser = systemUserService.getSystemUser();
+    DeckModel computerDeck = deckService.getRandomDeckForUser(computerUser.getId());
+    String defenderUserId = computerUser.getId();
+    String defenderDeckId = computerDeck.getId();
+
+    BattleResultDTO result =
+        battleService.startPVPBattle(
+            attackerUserId,
+            attackerDeckId,
+            defenderUserId,
+            defenderDeckId,
+            weatherLogId,
+            BattleType.computerPvp1v1);
+
+    ApiResponse<BattleResultDTO> response = new ApiResponse<>(true, "success", result);
+    return ResponseEntity.ok(response);
   }
 }

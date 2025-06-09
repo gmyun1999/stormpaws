@@ -18,12 +18,6 @@ public class WeatherController {
     this.weatherService = weatherService;
   }
 
-  // @GetMapping("/test_update")
-  // public ResponseEntity<String> fetchWeather() {
-  //   weatherService.updateAllCitiesWeather(); // 내부 로직은 그대로 사용
-  //   return ResponseEntity.ok("Weather data fetched and saved");
-  // }
-
   @GetMapping("/random")
   public ResponseEntity<ApiResponse<WeatherLogModel>> getRandomCityWeather() {
     WeatherLogModel log = weatherService.getRandomCityLatestWeather();

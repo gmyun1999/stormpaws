@@ -1,10 +1,8 @@
-POST {{stormpaw-host}}/battles/pvp
+POST {{stormpaw-host}}/battles/pvp/computer/random
 Content-Type: application/json
 
 {
   "attackerDeckId": "8098e6af-e686-4b94-a0cc-cabca5014c6d",
   "attackerUserId": "0cfec3c4-ac77-4bae-8207-983fe7902085",
-  "defenderDeckId": "2a01d611-8f64-4cd7-9dfe-f19ec2e6baac",
-  "defenderUserId": "e66ff422-9350-46a3-9f0b-763976719b92",
   "weatherLogId": "19d19d23-89e2-4551-9465-994361d03aa9"
 }

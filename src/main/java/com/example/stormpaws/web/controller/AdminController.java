@@ -29,7 +29,7 @@ public class AdminController {
   }
 
   /** 전체 도시 날씨 초기화 */
-  @PostMapping("/weather/initialize")
+  @PostMapping("/weather/init")
   public ResponseEntity<String> initWeather() {
     weatherService.updateAllCitiesWeather();
     return ResponseEntity.ok("날씨 데이터가 초기화(저장)되었습니다.");

@@ -1,4 +1,4 @@
-GET {{stormpaw-host}}/cards/1
+GET {{stormpaw-host}}/cards/a1111111-1111-1111-1111-111111111111
 Content-Type: application/json
 Authorization: Bearer {{stormpaw-jwt}}
 

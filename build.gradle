@@ -69,3 +69,7 @@ tasks.named('bootRun') {
         "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005"
     ]
 }
+
+tasks.withType(JavaCompile) {
+    options.compilerArgs << "-parameters"
+}

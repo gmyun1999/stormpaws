@@ -65,8 +65,8 @@ public class BattleController {
   @GetMapping("/my-records")
   public ResponseEntity<ApiResponse<PagedResultDTO<BattleRecordResponseDTO>>> getMyRecords(
       @AuthenticationPrincipal CustomUserDetails userDetails,
-      @RequestParam("page") int page,
-      @RequestParam("size") int size) {
+      @RequestParam(defaultValue = "1") int page,
+      @RequestParam(defaultValue = "10") int size) {
 
     UserModel user = userDetails.getUser();
     PagedResultDTO<BattleRecordResponseDTO> recordList =

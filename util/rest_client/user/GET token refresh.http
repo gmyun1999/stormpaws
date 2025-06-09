@@ -1,5 +1,8 @@
-GET {{stormpaw-host}}/user/refreshToken/
+POST {{stormpaw-host}}/user/refreshToken
 Content-Type: application/json
 Authorization: Bearer {{stormpaw-jwt}}
 
 # access 토큰 만료시 새로운 access 토큰을 발급해줍니다.
+{
+    "refreshToken": "asdas"
+}

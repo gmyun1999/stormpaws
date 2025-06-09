@@ -3,18 +3,25 @@ package com.example.stormpaws.web.controller;
 import com.example.stormpaws.domain.constant.BattleType;
 import com.example.stormpaws.domain.model.DeckModel;
 import com.example.stormpaws.domain.model.UserModel;
+import com.example.stormpaws.infra.security.CustomUserDetails;
 import com.example.stormpaws.service.BattleService;
 import com.example.stormpaws.service.DeckService;
 import com.example.stormpaws.service.SystemUserService;
+import com.example.stormpaws.service.dto.BattleRecordResponseDTO;
 import com.example.stormpaws.service.dto.BattleResultDTO;
+import com.example.stormpaws.service.dto.PagedResultDTO;
 import com.example.stormpaws.web.dto.request.BattleComputerPVPBody;
 import com.example.stormpaws.web.dto.request.BattlePVPBody;
 import com.example.stormpaws.web.dto.response.ApiResponse;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -52,6 +59,19 @@ public class BattleController {
 
     ApiResponse<BattleResultDTO> response = new ApiResponse<>(true, "success", result);
     return ResponseEntity.ok(response);
+  }
+
+  @PreAuthorize("isAuthenticated()")
+  @GetMapping("/records/me")
+  public ResponseEntity<ApiResponse<PagedResultDTO<BattleRecordResponseDTO>>> getMyRecords(
+      @AuthenticationPrincipal CustomUserDetails userDetails,
+      @RequestParam(defaultValue = "1") int page,
+      @RequestParam(defaultValue = "10") int size) {
+
+    UserModel user = userDetails.getUser();
+    PagedResultDTO<BattleRecordResponseDTO> recordList =
+        battleService.getMyRecordList(user, page, size);
+    return ResponseEntity.ok(new ApiResponse<>(true, "success", recordList));
   }
 
   @PostMapping("/pvp/computer/random")

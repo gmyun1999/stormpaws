@@ -24,7 +24,7 @@ The backend is designed with a **Clean Architecture** approach to ensure domain 
 
 ---
 
-## 📁 Project Structure (Clean Architecture)
+## 📁 Project Structure
 
 StormPaws is organized using a **Clean Architecture** to ensure maintainability and testability. It is composed of the following four layers:
 

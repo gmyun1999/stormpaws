@@ -33,7 +33,7 @@ StormPaws is organized using a **Clean Architecture** to ensure maintainability 
 - Defines core logic and data structures
 - Instead of using pure Value Objects or Entities, `*Model` classes are used as **domain objects** to match project scale and reduce overhead
   Example: `UserModel`, `DeckModel`, `CardModel`, `BattleModel`
-- These `*Model` classes are **reused as DTOs** for API input/output to reduce transformation costs and simplify the structure
+- Given the small scale of the project, we also used the `domain model` as a DTO to increase reusability.
 
 > ✅ Not separating domain models and DTOs is a strategic decision based on team size and development efficiency for small/mid-scale projects.
 
@@ -47,7 +47,6 @@ StormPaws is organized using a **Clean Architecture** to ensure maintainability 
 
 - Handles HTTP requests from clients
 - Example: `UserController`, `DeckController`, `BattleController`
-- Reuses `*Model` classes as request/response DTOs
 
 ### 📁 4. `infra` – Infrastructure Layer (External Systems)
 

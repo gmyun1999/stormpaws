@@ -12,7 +12,9 @@ import org.springframework.validation.BindException;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.servlet.NoHandlerFoundException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -56,5 +58,11 @@ public class GlobalExceptionHandler {
   public ResponseEntity<ApiResponse<?>> handleAuthenticationException(AuthenticationException ex) {
     return ResponseEntity.status(HttpStatus.UNAUTHORIZED) // 401
         .body(new ApiResponse<>(false, "Authentication required", null));
+  }
+
+  @ExceptionHandler(NoHandlerFoundException.class)
+  @ResponseStatus(HttpStatus.NOT_FOUND)
+  public Map<String, Object> handleNotFound(NoHandlerFoundException ex) {
+    return Map.of("success", false, "message", "API not found", "status", 404);
   }
 }

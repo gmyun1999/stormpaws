@@ -2,9 +2,9 @@ POST {{stormpaw-host}}/battles/pvp
 Content-Type: application/json
 
 {
-  "attackerDeckId": "8098e6af-e686-4b94-a0cc-cabca5014c6d",
-  "attackerUserId": "0cfec3c4-ac77-4bae-8207-983fe7902085",
-  "defenderDeckId": "2a01d611-8f64-4cd7-9dfe-f19ec2e6baac",
-  "defenderUserId": "e66ff422-9350-46a3-9f0b-763976719b92",
-  "weatherLogId": "d1889e11-b00d-4bf0-8067-c03b48e92bbf"
+  "attackerDeckId": "77b64d8c-1608-45cb-92e6-cc41a3fd2919",
+  "attackerUserId": "test-user-id",
+  "defenderDeckId": "18dd1b82-5a38-4bcd-a174-15fc7f63fa08",
+  "defenderUserId": "400e36e4-741d-4e3b-b32a-7c90400d2c30",
+  "weatherLogId": "7ecb2b73-781c-4666-a2c3-1382209a0d4f"
 }

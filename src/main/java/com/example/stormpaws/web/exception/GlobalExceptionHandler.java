@@ -65,4 +65,10 @@ public class GlobalExceptionHandler {
   public Map<String, Object> handleNotFound(NoHandlerFoundException ex) {
     return Map.of("success", false, "message", "API not found", "status", 404);
   }
+
+  @ExceptionHandler(Exception.class)
+  public ResponseEntity<ApiResponse<?>> handleUnhandledExceptions(Exception ex) {
+    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+        .body(new ApiResponse<>(false, "Service not available", null));
+  }
 }

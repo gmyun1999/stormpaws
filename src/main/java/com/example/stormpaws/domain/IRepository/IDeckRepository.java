@@ -12,8 +12,12 @@ public interface IDeckRepository {
   // userId에 해당되는 모든 덱을 찾는 메소드
   List<DeckModel> findByUserIdWithDeckCardsAndCards(String userId);
 
+  Optional<DeckModel> findById(String id);
+
   // 덱을 저장하는 메소드
   DeckModel save(DeckModel deckModel);
 
   List<String> findAllUserIdsWithDecks();
+
+  void deleteById(String deckId);
 }

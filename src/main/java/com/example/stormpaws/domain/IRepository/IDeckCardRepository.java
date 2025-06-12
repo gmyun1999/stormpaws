@@ -10,4 +10,6 @@ public interface IDeckCardRepository {
   <S extends DeckCardModel> List<S> saveAll(Iterable<S> entities);
 
   Optional<DeckCardModel> findById(String id);
+
+  void deleteByDeckId(String deckId);
 }

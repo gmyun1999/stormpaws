@@ -6,6 +6,7 @@ import com.example.stormpaws.service.DeckService;
 import com.example.stormpaws.service.dto.DeckCardDTO;
 import com.example.stormpaws.service.dto.PagedResultDTO;
 import com.example.stormpaws.web.dto.request.CreateDeckBody;
+import com.example.stormpaws.web.dto.request.DeleteDeckRequest;
 import com.example.stormpaws.web.dto.request.RandomDeckQueryParam;
 import com.example.stormpaws.web.dto.response.ApiResponse;
 import jakarta.validation.Valid;
@@ -15,6 +16,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -37,7 +39,7 @@ public class DeckController {
   @PreAuthorize("isAuthenticated()")
   @GetMapping("/decks/{deckId}")
   public ResponseEntity<ApiResponse<DeckModel>> getDeckByID(@PathVariable String deckId) {
-    DeckModel deck = deckService.getDeckById(deckId);
+    DeckModel deck = deckService.getNestedDeckById(deckId);
     ApiResponse<DeckModel> response = new ApiResponse<>(true, "success", deck);
     return ResponseEntity.ok(response);
   }
@@ -65,6 +67,16 @@ public class DeckController {
         new ApiResponse<>(true, "create deck successfully", deckModel);
 
     return ResponseEntity.status(HttpStatus.CREATED).body(response);
+  }
+
+  @PreAuthorize("isAuthenticated()")
+  @DeleteMapping("/user/me/decks")
+  public ResponseEntity<ApiResponse<Void>> deleteDeck(
+      @RequestBody DeleteDeckRequest request,
+      @AuthenticationPrincipal CustomUserDetails userDetails) {
+    deckService.deleteDecks(request.deckIds(), userDetails.getUser());
+    ApiResponse<Void> response = new ApiResponse<>(true, "delete decks successfully", null);
+    return ResponseEntity.ok(response);
   }
 
   // TODO 전역 advice로 처리히기

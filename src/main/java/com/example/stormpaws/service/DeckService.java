@@ -39,11 +39,17 @@ public class DeckService {
     return Paginator.paginate(allDecks, page, size);
   }
 
-  public DeckModel getDeckById(String deckId) {
+  public DeckModel getNestedDeckById(String deckId) {
     Optional<DeckModel> deck = deckRepository.findByIdWithDeckCardsAndCards(deckId);
 
     return deck.orElseThrow(
         () -> new IllegalArgumentException("Deck not found with id: " + deckId));
+  }
+
+  public DeckModel getDeckById(String deckId) {
+    return deckRepository
+        .findById(deckId)
+        .orElseThrow(() -> new IllegalArgumentException("Deck not found with id: " + deckId));
   }
 
   public DeckModel createDeck(DeckCardDTO deckCardDTO, UserModel user) {
@@ -102,6 +108,21 @@ public class DeckService {
       throw new IllegalArgumentException("User " + userId + " has no decks");
     }
     return decks.get(ThreadLocalRandom.current().nextInt(decks.size()));
+  }
+
+  @Transactional
+  public void deleteDecks(List<String> deckIds, UserModel user) {
+    for (String deckId : deckIds) {
+      DeckModel deck = getDeckById(deckId);
+      if (!deck.getUser().getId().equals(user.getId())) {
+        throw new IllegalArgumentException("You do not have permission to delete deck: " + deckId);
+      }
+
+      // 덱카드 먼저 삭제
+      deckCardRepository.deleteByDeckId(deckId);
+      // 덱 삭제
+      deckRepository.deleteById(deckId);
+    }
   }
 
   public PagedResultDTO<DeckModel> getRandomDecksWithoutUser(int count, UserModel user) {

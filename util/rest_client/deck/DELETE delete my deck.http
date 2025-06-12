@@ -1,0 +1,9 @@
+DELETE {{stormpaw-host}}/user/me/decks
+Content-Type: application/json
+Authorization: Bearer {{stormpaw-jwt}}
+
+{
+    "deckIds": [
+        "87463d94-b634-42fc-943f-afd7b02c6ce2"
+    ]
+}

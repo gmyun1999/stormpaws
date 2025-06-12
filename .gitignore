@@ -52,3 +52,5 @@ target/
 .idea/**/workspace.xml
 
 *.properties
+
+*.rest_client
